@@ -171,7 +171,7 @@ def easter_event_check() -> None:
 
     logger.info("DETECTED -- Easter")
     click(COORDS.EASTER_COLLECTION)  # DUE TO EASTER EVENT:
-    time.sleep(0.5)
+    time.sleep(1)
 
     click(COORDS.EASTER_INSTA_L)
     time.sleep(1)
@@ -183,7 +183,7 @@ def easter_event_check() -> None:
     time.sleep(2)
 
     click(COORDS.EASTER_CONTINUE)
-    time.sleep(0.5)
+    time.sleep(1)
     press_key("esc")
     time.sleep(2)
 
