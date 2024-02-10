@@ -36,10 +36,10 @@ class COORDS(tuple[int, int], Enum):
 
 
 class Tower(ABC):
-    coords: tuple[int, int]
+    coords: COORDS
     upgrades: list[int]
 
-    def __init__(self, coords: COORDS | tuple[int, int]) -> None:
+    def __init__(self, coords: COORDS) -> None:
         self.coords = coords
         self.upgrades = [0] * 3
 
@@ -129,8 +129,8 @@ def scaling(x: int, y: int, add_padding: bool = True) -> tuple[int, int]:
     return x, y
 
 
-def click(location: COORDS | tuple[int, int], add_padding: bool = True) -> None:
-    pyautogui.click(scaling(*location, add_padding=add_padding))
+def click(coords: COORDS, add_padding: bool = True) -> None:
+    pyautogui.click(scaling(*coords, add_padding=add_padding))
     time.sleep(0.2)
 
 
