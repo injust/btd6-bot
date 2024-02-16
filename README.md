@@ -1,40 +1,21 @@
-# Py_AutoBloons
+# btd6-bot
 
-A Python script that will playthrough the Dark Castle map on Bloons TD 6
+A Python script that plays the Dark Castle map on Bloons TD 6. Farms Insta-Monkeys, Monkey Money, and XP!
 
-- Generates Monkey Money, Insta-Monkeys, Account Levels and Monkey Experiance!
+Forked from [RavingSmurfGB/Py_AutoBloons](https://github.com/RavingSmurfGB/Py_AutoBloons).
 
-## How It Works
+## How it works
 
-This program will select the map Dark Castle, beat it on easy difficulty,
-collect any event items, then loop continously. It will use the Hero OBYN, a
-submarine and a ninja monkey to beat the gane. Please view
-[What Is Needed](#what-is-needed) to ensure your setup and ready to run the
-program. Using the script auto restart is advised as the script can break
-occasionaly due to many factors which have not been fully determined yet, see
-[Auto Restart](#auto-restart)
+The script plays the Dark Castle map on Easy difficulty, collects any Collection Event items, and loops continously. It uses Obyn, a Monkey Sub, and a Ninja Monkey to beat the game.
 
-## Installation
+## Usage
 
-### Manual Install
+1. `pip3 install -r requirements.txt`
+2. Launch Bloons TD 6
+3. Run `main.py`
+4. Focus the Bloons TD 6 window within 5 seconds
 
-0. Install Python
-1. Extract .zip
-2. Open a CMD window
-3. Enter each command bellow
-
-   > pip3 install -r requirements.txt
-
-## How To Use
-
-1. Launch Bloons TD 6
-2. Run Py_AutoBloons.py
-3. Tab back in to Bloons TD 6 within 5 seconds / ensure your cursor is over it
-   \| The Bloons TD 6 Game must be played on your primary monitor. \| Auto Start
-
-## Compatibility
-
-#### Resolutions officialy supported:
+## Supported resolutions
 
 - 1920x1080
 - 2160x1080
