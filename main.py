@@ -143,16 +143,17 @@ def sleep(seconds: float) -> None:
     time.sleep(seconds)
 
 
-def locate(image: cv2.typing.MatLike, search_time: float = 0) -> bool:
+def locate(name: str, search_time: float = 0) -> bool:
     try:
-        pyautogui.locateOnScreen(image, minSearchTime=search_time, grayscale=True, confidence=0.9)
+        box = pyautogui.locateOnScreen(IMAGES[name], minSearchTime=search_time, grayscale=True, confidence=0.9)
+        logger.debug(f"{name} located at {box}")
         return True
     except pyautogui.ImageNotFoundException:
         return False
 
 
 def obyn_check() -> None:
-    if locate(IMAGES["obyn"]):
+    if locate("obyn"):
         return
 
     logger.info("Obyn not selected, changing hero")
@@ -161,11 +162,11 @@ def obyn_check() -> None:
     click(COORDS.HERO_CONFIRM)
     press("esc")
 
-    assert locate(IMAGES["obyn"])
+    assert locate("obyn")
 
 
 def easter_event_check() -> None:
-    if not locate(IMAGES["easter"]):
+    if not locate("easter"):
         return
 
     logger.info("Easter event detected")
@@ -188,21 +189,21 @@ def easter_event_check() -> None:
 
 
 def victory_check(search_time: float = 0) -> bool:
-    if locate(IMAGES["victory"], search_time=search_time):
+    if locate("victory", search_time=search_time):
         logger.debug("Victory detected")
         return True
     return False
 
 
 def defeat_check(search_time: float = 0) -> bool:
-    if locate(IMAGES["defeat"], search_time=search_time):
+    if locate("defeat", search_time=search_time):
         logger.debug("Defeat detected")
         return True
     return False
 
 
 def menu_check(search_time: float = 0) -> bool:
-    if locate(IMAGES["menu"], search_time=search_time):
+    if locate("menu", search_time=search_time):
         logger.debug("Menu detected")
         return True
     return False
