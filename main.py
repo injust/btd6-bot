@@ -16,7 +16,7 @@ from loguru import logger
 
 # positions mapped at 2560x1440
 class COORDS(tuple[int, int], Enum):
-    HOME_MENU_START = (1123, 1248)
+    HOME_START = (1123, 1248)
     EXPERT_SELECTION = (1778, 1304)
     DARK_CASTLE = (730, 780)
     EASY_DIFFICULTY = (838, 550)
@@ -195,7 +195,7 @@ def select_map() -> None:
     logger.info("Selecting map")
     assert locate("menu")
 
-    click(COORDS.HOME_MENU_START)
+    click(COORDS.HOME_START)
     click(COORDS.EXPERT_SELECTION)
     click(COORDS.EXPERT_SELECTION)
     click(COORDS.DARK_CASTLE)
