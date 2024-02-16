@@ -153,8 +153,15 @@ def locate_on_screen(image: MatLike, min_search_time: float = 0, *, confidence: 
     with ScreenshotOfOneMonitor() as sm:
         start_time = time.monotonic()
         while True:
-            screenshot = sm.screenshot_one_monitor()
-            if (box := pyscreeze.locate(image, screenshot, grayscale=True, confidence=confidence)) is not None:
+            with timer() as t:
+                screenshot = sm.screenshot_one_monitor()
+            logger.debug(f"Screenshot took {t()} seconds")
+
+            with timer() as t:
+                box = pyscreeze.locate(image, screenshot, grayscale=True, confidence=confidence)
+            logger.debug(f"pyscreeze.locate() took {t()} seconds")
+
+            if box is not None:
                 return box
             elif time.monotonic() - start_time > min_search_time:
                 return None
