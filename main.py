@@ -273,7 +273,7 @@ def Exit_Game() -> None:
         click(COORDS.VICTORY_CONTINUE)
         time.sleep(0.2)
     elif not defeat_check():
-        raise Exception
+        raise Exception("Victory/Defeat screen not detected")
 
     click(COORDS.VICTORY_HOME)
     time.sleep(2)
