@@ -159,22 +159,24 @@ def sleep(seconds: float) -> None:
 def locate_on_screen(
     image: MatLike, min_search_time: float = 0, *, region: pyscreeze.Box | None = None, confidence: float = 0.999
 ) -> pyscreeze.Box | None:
-    """Similar to `pyscreeze.locateOnScreen()`, but uses `mss` for screenshots."""
-    monitor = (pyscreeze.Box(0, 0, *pyautogui.size()))._asdict()
+    """Similar to `pyscreeze.locateOnScreen()`, but uses `mss` for screenshots and only screenshots the search region."""
+    if region is None:
+        region = pyscreeze.Box(0, 0, *pyautogui.size())
 
     with mss() as sct:
         start_time = time.monotonic()
         while True:
             with timer_ns() as t:
-                screenshot = cv2.cvtColor(np.asarray(sct.grab(monitor)), cv2.COLOR_BGRA2GRAY)
+                screenshot = cv2.cvtColor(np.asarray(sct.grab(region._asdict())), cv2.COLOR_BGRA2GRAY)
             logger.debug(f"Screenshot took {t() / 1e6} ms")
 
             with timer_ns() as t:
-                box = pyscreeze.locate(image, screenshot, grayscale=True, region=region, confidence=confidence)
+                box = pyscreeze.locate(image, screenshot, grayscale=True, confidence=confidence)
             logger.debug(f"pyscreeze.locate() took {t() / 1e6} ms")
 
             if box is not None:
-                return box
+                # Adjust box to return coordinates relative to screen instead of search region
+                return box._replace(left=box.left + region.left, top=box.top + region.top)
             elif time.monotonic() - start_time > min_search_time:
                 return None
 
