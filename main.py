@@ -212,7 +212,7 @@ def menu_check(search_time: float = 0) -> bool:
 
 
 ###########################################[GAME]###########################################
-def Start_Select_Map() -> None:
+def select_map() -> None:
     logger.info("Selecting map")
     assert menu_check()
 
@@ -225,7 +225,7 @@ def Start_Select_Map() -> None:
     click(COORDS.OVERWRITE_SAVE)
 
 
-def Main_Game() -> None:
+def main_game() -> None:
     logger.info("Starting game")
     sleep(3)
 
@@ -266,7 +266,7 @@ def Main_Game() -> None:
     sleep(55.5)
 
 
-def Exit_Game() -> None:
+def exit_game() -> None:
     logger.info("Game ending, returning to menu")
 
     if victory_check(search_time=5):
@@ -290,9 +290,9 @@ time.sleep(0.5)
 obyn_check()
 
 while True:
-    Start_Select_Map()
-    Main_Game()
-    Exit_Game()
+    select_map()
+    main_game()
+    exit_game()
 
 
 ###########################################U
