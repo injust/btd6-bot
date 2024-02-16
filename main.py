@@ -146,7 +146,7 @@ def sleep(seconds: float) -> None:
 
 def locate(image: Path) -> bool:
     try:
-        pyautogui.locateOnScreen(str(image), confidence=0.9)
+        pyautogui.locateOnScreen(str(image), grayscale=True, confidence=0.9)
         return True
     except pyautogui.ImageNotFoundException:
         return False
