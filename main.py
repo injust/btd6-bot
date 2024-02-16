@@ -11,6 +11,9 @@ from typing import Any, Literal
 import cv2
 import pyautogui
 import pydirectinput
+import pyscreeze
+from cv2.typing import MatLike
+from fast_ctypes_screenshots import ScreenshotOfOneMonitor
 from loguru import logger
 
 
@@ -88,6 +91,8 @@ class Sub(Tower):
 
 ###########################################[SETUP]###########################################
 
+pyscreeze.USE_IMAGE_NOT_FOUND_EXCEPTION = False
+
 # Determine which pictures are loaded (pictures are resolution-specific!)
 screen_height = pyautogui.size()[1]
 
@@ -142,14 +147,28 @@ def sleep(seconds: float) -> None:
     time.sleep(seconds)
 
 
-def locate(name: str, search_time: float = 0) -> bool:
-    try:
-        with timer() as t:
-            box = pyautogui.locateOnScreen(IMAGES[name], minSearchTime=search_time, grayscale=True, confidence=0.9)
+def locate_on_screen(image: MatLike, min_search_time: float = 0, *, confidence: float = 0.999) -> pyscreeze.Box | None:
+    """Similar to `pyscreeze.locateOnScreen()`, but uses `fast-ctypes-screenshots` for screenshots."""
+    with ScreenshotOfOneMonitor() as sm:
+        start_time = time.monotonic()
+        while True:
+            screenshot = sm.screenshot_one_monitor()
+            if (box := pyscreeze.locate(image, screenshot, grayscale=True, confidence=confidence)) is not None:
+                return box
+            elif time.monotonic() - start_time > min_search_time:
+                return None
+
+
+def locate(name: str, min_search_time: float = 0) -> bool:
+    with timer() as t:
+        box = locate_on_screen(IMAGES[name], min_search_time, confidence=0.9)
+
+    if box is None:
+        logger.debug(f"{name} not found after {t():.3f} seconds")
+        return False
+    else:
         logger.debug(f"{name} located at {box} in {t():.3f} seconds")
         return True
-    except pyautogui.ImageNotFoundException:
-        return False
 
 
 def obyn_check() -> None:
@@ -249,7 +268,7 @@ def main_game() -> None:
 def exit_game() -> None:
     logger.info("Game ending, returning to menu")
 
-    if locate("victory", search_time=5):
+    if locate("victory", min_search_time=5):
         click(COORDS.VICTORY_CONTINUE)
         time.sleep(0.2)
     elif not locate("defeat"):
@@ -263,7 +282,7 @@ def exit_game() -> None:
 
 ###########################################[MAIN LOOP]###########################################
 logger.info("Focus BTD6 window within 5 seconds")
-if not locate("menu", search_time=5):
+if not locate("menu", min_search_time=5):
     raise Exception("BTD6 window not detected")
 time.sleep(0.5)
 

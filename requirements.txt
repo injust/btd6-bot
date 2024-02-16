@@ -1,6 +1,8 @@
+fast-ctypes-screenshots
 loguru
 opencv-python
-pillow
 PyAutoGUI
 PyDirectInput
+PyScreeze
 types-PyAutoGUI
+types-PyScreeze
