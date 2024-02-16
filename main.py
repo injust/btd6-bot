@@ -180,6 +180,7 @@ def locate(name: str, min_search_time: float = 0) -> bool:
 
 
 def obyn_check() -> None:
+    logger.info("Checking for Obyn")
     if locate("obyn"):
         return
 
@@ -285,14 +286,16 @@ def exit_game() -> None:
     click(COORDS.VICTORY_HOME)
     time.sleep(2)
     easter_event_check()
-    assert locate("menu")
+
+    if not locate("menu"):
+        raise Exception("BTD6 menu not detected")
 
 
 @logger.catch(onerror=lambda _: sys.exit(1))
 def main() -> None:
-    logger.info("Focus BTD6 window within 5 seconds")
+    logger.info("Focus the BTD6 window within 5 seconds")
     if not locate("menu", min_search_time=5):
-        raise Exception("BTD6 window not detected")
+        raise Exception("BTD6 menu not detected")
     time.sleep(0.5)
 
     obyn_check()
