@@ -46,7 +46,7 @@ class Tower(ABC):
 
         logger.info(f"Placing down {type(self).__name__}")
         pyautogui.moveTo(scaling(*self.coords))
-        press_key(self.hotkey)
+        press(self.hotkey)
         pyautogui.click()
         time.sleep(0.1)
 
@@ -64,8 +64,8 @@ class Tower(ABC):
         logger.info(f"Upgrading {name_before_upgrade} to {''.join(map(str, self.upgrades))}")
 
         click(self.coords)
-        press_key(["", ",", ".", "/"][path])
-        press_key("esc")
+        press(["", ",", ".", "/"][path])
+        press("esc")
 
 
 class Obyn(Tower):
@@ -133,7 +133,7 @@ def click(coords: COORDS, add_padding: bool = True) -> None:
     time.sleep(0.2)
 
 
-def press_key(key: str) -> None:
+def press(key: str) -> None:
     pydirectinput.press(key)
     time.sleep(0.2)
 
@@ -159,7 +159,7 @@ def obyn_check() -> None:
     click(COORDS.HERO_SELECT)
     click(COORDS.HERO_OBYN, add_padding=False)
     click(COORDS.HERO_CONFIRM)
-    press_key("esc")
+    press("esc")
 
     assert locate(IMAGES["obyn"])
 
@@ -183,7 +183,7 @@ def easter_event_check() -> None:
 
     click(COORDS.EASTER_CONTINUE)
     time.sleep(1)
-    press_key("esc")
+    press("esc")
     time.sleep(2)
 
 
