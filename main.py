@@ -194,7 +194,6 @@ def easter_event_check() -> None:
 ###########################################[GAME]###########################################
 def select_map() -> None:
     logger.info("Selecting map")
-    assert locate("menu")
 
     click(COORDS.HOME_START)
     click(COORDS.EXPERT_SELECTION)
@@ -204,10 +203,11 @@ def select_map() -> None:
     click(COORDS.STANDARD_MODE)
     click(COORDS.OVERWRITE_SAVE)
 
+    sleep(3)
+
 
 def main_game() -> None:
     logger.info("Starting game")
-    sleep(3)
 
     # Start and fast-forward the game
     pydirectinput.press("space", presses=2)
