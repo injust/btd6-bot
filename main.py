@@ -271,7 +271,7 @@ def main_game() -> None:
     sleep(43.5)
 
     ninja.upgrade(1)
-    sleep(55.5)
+    sleep(55)
 
 
 def exit_game() -> None:
