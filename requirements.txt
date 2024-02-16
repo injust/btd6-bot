@@ -1,8 +1,6 @@
-pyautogui
-pillow
-termcolor
+loguru
 opencv-python
-pyyaml
-ahk
-pynput
-keyboard
+pillow
+PyAutoGUI
+PyDirectInput
+types-PyAutoGUI
