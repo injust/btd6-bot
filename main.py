@@ -187,34 +187,13 @@ def easter_event_check() -> None:
     time.sleep(2)
 
 
-def victory_check(search_time: float = 0) -> bool:
-    if locate("victory", search_time=search_time):
-        logger.debug("Victory detected")
-        return True
-    return False
-
-
-def defeat_check(search_time: float = 0) -> bool:
-    if locate("defeat", search_time=search_time):
-        logger.debug("Defeat detected")
-        return True
-    return False
-
-
-def menu_check(search_time: float = 0) -> bool:
-    if locate("menu", search_time=search_time):
-        logger.debug("Menu detected")
-        return True
-    return False
-
-
 ###########################################
 
 
 ###########################################[GAME]###########################################
 def select_map() -> None:
     logger.info("Selecting map")
-    assert menu_check()
+    assert locate("menu")
 
     click(COORDS.HOME_MENU_START)
     click(COORDS.EXPERT_SELECTION)
@@ -269,21 +248,21 @@ def main_game() -> None:
 def exit_game() -> None:
     logger.info("Game ending, returning to menu")
 
-    if victory_check(search_time=5):
+    if locate("victory", search_time=5):
         click(COORDS.VICTORY_CONTINUE)
         time.sleep(0.2)
-    elif not defeat_check():
+    elif not locate("defeat"):
         raise Exception("Victory/Defeat not detected")
 
     click(COORDS.VICTORY_HOME)
     time.sleep(2)
     easter_event_check()
-    assert menu_check()
+    assert locate("menu")
 
 
 ###########################################[MAIN LOOP]###########################################
 logger.info("Focus BTD6 window within 5 seconds")
-if not menu_check(search_time=5):
+if not locate("menu", search_time=5):
     raise Exception("BTD6 window not detected")
 time.sleep(0.5)
 
