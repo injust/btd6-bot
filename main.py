@@ -300,10 +300,13 @@ def main() -> None:
 
     obyn_check()
 
-    while True:
-        select_map()
-        main_game()
-        exit_game()
+    try:
+        while True:
+            select_map()
+            main_game()
+            exit_game()
+    except KeyboardInterrupt:
+        logger.debug("Shutting down")
 
 
 if __name__ == "__main__":
