@@ -40,6 +40,13 @@ class COORDS(tuple[int, int], Enum):
     HERO_CONFIRM = (1490, 815)
 
 
+# position of each screenshot at 2560x1440
+class IMAGE_BOXES(pyscreeze.Box, Enum):
+    MENU = pyscreeze.Box(45, 594, 119, 101)
+    OBYN = pyscreeze.Box(717, 1219, 188, 130)
+    VICTORY = pyscreeze.Box(943, 187, 668, 116)
+
+
 class Tower(ABC):
     coords: COORDS
     upgrades: list[int]
@@ -95,7 +102,7 @@ class Sub(Tower):
 pyscreeze.USE_IMAGE_NOT_FOUND_EXCEPTION = False
 
 # Determine which pictures are loaded (pictures are resolution-specific!)
-screen_height = pyautogui.size()[1]
+screen_width, screen_height = pyautogui.size()
 
 IMAGES = {
     name: cv2.imread(str(Path.cwd() / "images" / f"{screen_height}_{name}.png"), flags=cv2.IMREAD_GRAYSCALE)
@@ -148,7 +155,13 @@ def sleep(seconds: float) -> None:
     time.sleep(seconds)
 
 
-def locate_on_screen(image: MatLike, min_search_time: float = 0, *, confidence: float = 0.999) -> pyscreeze.Box | None:
+def locate_on_screen(
+    image: MatLike,
+    min_search_time: float = 0,
+    *,
+    region: tuple[int, int, int, int] | None = None,
+    confidence: float = 0.999,
+) -> pyscreeze.Box | None:
     """Similar to `pyscreeze.locateOnScreen()`, but uses `fast-ctypes-screenshots` for screenshots."""
     with ScreenshotOfOneMonitor() as sm:
         start_time = time.monotonic()
@@ -158,7 +171,7 @@ def locate_on_screen(image: MatLike, min_search_time: float = 0, *, confidence: 
             logger.debug(f"Screenshot took {t() / 1e6} ms")
 
             with timer_ns() as t:
-                box = pyscreeze.locate(image, screenshot, grayscale=True, confidence=confidence)
+                box = pyscreeze.locate(image, screenshot, grayscale=True, region=region, confidence=confidence)
             logger.debug(f"pyscreeze.locate() took {t() / 1e6} ms")
 
             if box is not None:
@@ -167,9 +180,9 @@ def locate_on_screen(image: MatLike, min_search_time: float = 0, *, confidence: 
                 return None
 
 
-def locate(name: str, min_search_time: float = 0) -> bool:
+def locate(name: str, min_search_time: float = 0, *, region: tuple[int, int, int, int] | None = None) -> bool:
     with timer_ns() as t:
-        box = locate_on_screen(IMAGES[name], min_search_time, confidence=0.9)
+        box = locate_on_screen(IMAGES[name], min_search_time, region=region, confidence=0.9)
 
     if box is None:
         logger.debug(f"{name} not found after {t() / 1e6} ms")
@@ -179,9 +192,34 @@ def locate(name: str, min_search_time: float = 0) -> bool:
         return True
 
 
+def calculate_search_region(region_2560_1440: pyscreeze.Box, add_padding: bool = True) -> pyscreeze.Box:
+    left, top = scaling(region_2560_1440.left, region_2560_1440.top, add_padding=add_padding)
+    return pyscreeze.Box(
+        left := max(0, left - region_2560_1440.width),
+        top := max(0, top - region_2560_1440.height),
+        min(screen_width - left, region_2560_1440.width * 2),
+        min(screen_height - top, region_2560_1440.height * 2),
+    )
+
+
+def locate_menu(min_search_time: float = 0) -> bool:
+    search_region = calculate_search_region(IMAGE_BOXES.MENU, add_padding=False)
+    return locate("menu", min_search_time, region=search_region)
+
+
+def locate_obyn(min_search_time: float = 0) -> bool:
+    search_region = calculate_search_region(IMAGE_BOXES.OBYN)
+    return locate("obyn", min_search_time, region=search_region)
+
+
+def locate_victory(min_search_time: float = 0) -> bool:
+    search_region = calculate_search_region(IMAGE_BOXES.VICTORY)
+    return locate("victory", min_search_time, region=search_region)
+
+
 def obyn_check() -> None:
     logger.info("Checking for Obyn")
-    if locate("obyn"):
+    if locate_obyn():
         return
 
     logger.info("Obyn not selected, changing hero")
@@ -190,7 +228,7 @@ def obyn_check() -> None:
     click(COORDS.HERO_CONFIRM)
     press("esc")
 
-    assert locate("obyn")
+    assert locate_obyn()
 
 
 def easter_event_check() -> None:
@@ -277,7 +315,7 @@ def main_game() -> None:
 def exit_game() -> None:
     logger.info("Game ending, returning to menu")
 
-    if locate("victory", min_search_time=5):
+    if locate_victory(min_search_time=5):
         click(COORDS.VICTORY_CONTINUE)
         time.sleep(0.2)
     elif not locate("defeat"):
@@ -287,14 +325,14 @@ def exit_game() -> None:
     time.sleep(2)
     easter_event_check()
 
-    if not locate("menu"):
+    if not locate_menu():
         raise Exception("BTD6 menu not detected")
 
 
 @logger.catch(onerror=lambda _: sys.exit(1))
 def main() -> None:
     logger.info("Focus the BTD6 window within 5 seconds")
-    if not locate("menu", min_search_time=5):
+    if not locate_menu(min_search_time=5):
         raise Exception("BTD6 menu not detected")
     time.sleep(0.5)
 
