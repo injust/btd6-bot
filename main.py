@@ -139,7 +139,7 @@ def press(key: str) -> None:
 
 
 def sleep(seconds: float) -> None:
-    logger.info(f"sleeping for {seconds} seconds")
+    logger.debug(f"Sleeping for {seconds} seconds")
     time.sleep(seconds)
 
 
@@ -155,7 +155,7 @@ def obyn_check() -> None:
     if locate(IMAGES["obyn"]):
         return
 
-    logger.info("STATUS -- Obyn not selected, changing hero")
+    logger.info("Obyn not selected, changing hero")
     click(COORDS.HERO_SELECT)
     click(COORDS.HERO_OBYN, add_padding=False)
     click(COORDS.HERO_CONFIRM)
@@ -168,8 +168,8 @@ def easter_event_check() -> None:
     if not locate(IMAGES["easter"]):
         return
 
-    logger.info("DETECTED -- Easter")
-    click(COORDS.EASTER_COLLECTION)  # DUE TO EASTER EVENT:
+    logger.info("Easter event detected")
+    click(COORDS.EASTER_COLLECTION)
     time.sleep(1)
 
     click(COORDS.EASTER_INSTA_L)
@@ -189,21 +189,21 @@ def easter_event_check() -> None:
 
 def victory_check(search_time: float = 0) -> bool:
     if locate(IMAGES["victory"], search_time=search_time):
-        logger.info("DETECTED -- Victory")
+        logger.debug("Victory detected")
         return True
     return False
 
 
 def defeat_check(search_time: float = 0) -> bool:
     if locate(IMAGES["defeat"], search_time=search_time):
-        logger.info("DETECTED -- Defeat")
+        logger.debug("Defeat detected")
         return True
     return False
 
 
 def menu_check(search_time: float = 0) -> bool:
     if locate(IMAGES["menu"], search_time=search_time):
-        logger.info("DETECTED -- Menu")
+        logger.debug("Menu detected")
         return True
     return False
 
@@ -213,7 +213,7 @@ def menu_check(search_time: float = 0) -> bool:
 
 ###########################################[GAME]###########################################
 def Start_Select_Map() -> None:
-    logger.info("STATUS -- Selecting map")
+    logger.info("Selecting map")
     assert menu_check()
 
     click(COORDS.HOME_MENU_START)
@@ -226,7 +226,7 @@ def Start_Select_Map() -> None:
 
 
 def Main_Game() -> None:
-    logger.info("STATUS -- Starting main game")
+    logger.info("Starting game")
     sleep(3)
 
     # Start and fast-forward the game
@@ -267,13 +267,13 @@ def Main_Game() -> None:
 
 
 def Exit_Game() -> None:
-    logger.info("STATUS -- Game ending, returning to menu")
+    logger.info("Game ending, returning to menu")
 
     if victory_check(search_time=5):
         click(COORDS.VICTORY_CONTINUE)
         time.sleep(0.2)
     elif not defeat_check():
-        raise Exception("Victory/Defeat screen not detected")
+        raise Exception("Victory/Defeat not detected")
 
     click(COORDS.VICTORY_HOME)
     time.sleep(2)
