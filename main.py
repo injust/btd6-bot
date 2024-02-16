@@ -144,8 +144,9 @@ def sleep(seconds: float) -> None:
 
 def locate(name: str, search_time: float = 0) -> bool:
     try:
-        box = pyautogui.locateOnScreen(IMAGES[name], minSearchTime=search_time, grayscale=True, confidence=0.9)
-        logger.debug(f"{name} located at {box}")
+        with timer() as t:
+            box = pyautogui.locateOnScreen(IMAGES[name], minSearchTime=search_time, grayscale=True, confidence=0.9)
+        logger.debug(f"{name} located at {box} in {t():.3f} seconds")
         return True
     except pyautogui.ImageNotFoundException:
         return False
