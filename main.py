@@ -106,10 +106,10 @@ reso_16_9: list[tuple[int, int]] = [(1920, 1080), (2560, 1440), (3840, 2160)]
 
 
 @contextmanager
-def timer() -> Generator[Callable[[], float], Any, None]:
-    t1 = t2 = time.monotonic()
+def timer_ns() -> Generator[Callable[[], int], Any, None]:
+    t1 = t2 = time.time_ns()
     yield lambda: t2 - t1
-    t2 = time.monotonic()
+    t2 = time.time_ns()
 
 
 def scaling(x: int, y: int, add_padding: bool = True) -> tuple[int, int]:
@@ -153,13 +153,13 @@ def locate_on_screen(image: MatLike, min_search_time: float = 0, *, confidence: 
     with ScreenshotOfOneMonitor() as sm:
         start_time = time.monotonic()
         while True:
-            with timer() as t:
+            with timer_ns() as t:
                 screenshot = sm.screenshot_one_monitor()
-            logger.debug(f"Screenshot took {t()} seconds")
+            logger.debug(f"Screenshot took {t() / 1e6} ms")
 
-            with timer() as t:
+            with timer_ns() as t:
                 box = pyscreeze.locate(image, screenshot, grayscale=True, confidence=confidence)
-            logger.debug(f"pyscreeze.locate() took {t()} seconds")
+            logger.debug(f"pyscreeze.locate() took {t() / 1e6} ms")
 
             if box is not None:
                 return box
@@ -168,14 +168,14 @@ def locate_on_screen(image: MatLike, min_search_time: float = 0, *, confidence: 
 
 
 def locate(name: str, min_search_time: float = 0) -> bool:
-    with timer() as t:
+    with timer_ns() as t:
         box = locate_on_screen(IMAGES[name], min_search_time, confidence=0.9)
 
     if box is None:
-        logger.debug(f"{name} not found after {t():.3f} seconds")
+        logger.debug(f"{name} not found after {t() / 1e6} ms")
         return False
     else:
-        logger.debug(f"{name} located at {box} in {t():.3f} seconds")
+        logger.debug(f"{name} located at {box} in {t() / 1e6} ms")
         return True
 
 
