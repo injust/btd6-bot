@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import sys
 import time
 from abc import ABC, abstractmethod
 from collections.abc import Callable, Generator
@@ -280,18 +281,23 @@ def exit_game() -> None:
     assert locate("menu")
 
 
-###########################################[MAIN LOOP]###########################################
-logger.info("Focus BTD6 window within 5 seconds")
-if not locate("menu", min_search_time=5):
-    raise Exception("BTD6 window not detected")
-time.sleep(0.5)
+@logger.catch(onerror=lambda _: sys.exit(1))
+def main() -> None:
+    logger.info("Focus BTD6 window within 5 seconds")
+    if not locate("menu", min_search_time=5):
+        raise Exception("BTD6 window not detected")
+    time.sleep(0.5)
 
-obyn_check()
+    obyn_check()
 
-while True:
-    select_map()
-    main_game()
-    exit_game()
+    while True:
+        select_map()
+        main_game()
+        exit_game()
 
 
-###########################################U
+if __name__ == "__main__":
+    logger.remove()
+    logger.add(sys.stderr, diagnose=True)
+
+    main()
