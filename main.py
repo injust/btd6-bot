@@ -155,7 +155,7 @@ def obyn_check() -> None:
     if locate(IMAGES["obyn"]):
         return
 
-    logger.info("STATUS -- Obyn not detected, changing hero")
+    logger.info("STATUS -- Obyn not selected, changing hero")
     click(COORDS.HERO_SELECT)
     click(COORDS.HERO_OBYN, add_padding=False)
     click(COORDS.HERO_CONFIRM)
@@ -213,7 +213,7 @@ def menu_check() -> bool:
 
 ###########################################[GAME]###########################################
 def Start_Select_Map() -> None:
-    logger.info("STATUS -- Map Selection in progress")
+    logger.info("STATUS -- Selecting map")
     assert menu_check()
 
     click(COORDS.HOME_MENU_START)
@@ -267,7 +267,7 @@ def Main_Game() -> None:
 
 
 def Exit_Game() -> None:
-    logger.info("STATUS -- Exiting Game, restarting loop")
+    logger.info("STATUS -- Game ending, restarting loop")
 
     if victory_check():
         click(COORDS.VICTORY_CONTINUE)
