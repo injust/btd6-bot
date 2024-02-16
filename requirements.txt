@@ -1,8 +1,8 @@
-fast-ctypes-screenshots
-loguru
-opencv-python
-PyAutoGUI
-PyDirectInput
-PyScreeze
-types-PyAutoGUI
-types-PyScreeze
+fast-ctypes-screenshots>=0.10
+loguru>=0.7.2
+opencv-python>=4.9.0.80
+PyAutoGUI>=0.9.54
+PyDirectInput>=1.0.4
+PyScreeze>=0.1.30
+types-PyAutoGUI>=0.9.3.20240106
+types-PyScreeze>=0.1.30.20240106
