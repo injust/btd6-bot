@@ -143,9 +143,9 @@ def sleep(seconds: float) -> None:
     time.sleep(seconds)
 
 
-def locate(image: cv2.typing.MatLike, minSearchTime: float = 0) -> bool:
+def locate(image: cv2.typing.MatLike, search_time: float = 0) -> bool:
     try:
-        pyautogui.locateOnScreen(image, minSearchTime=minSearchTime, grayscale=True, confidence=0.9)
+        pyautogui.locateOnScreen(image, minSearchTime=search_time, grayscale=True, confidence=0.9)
         return True
     except pyautogui.ImageNotFoundException:
         return False
@@ -187,22 +187,22 @@ def easter_event_check() -> None:
     time.sleep(2)
 
 
-def victory_check(minSearchTime: float = 0) -> bool:
-    if locate(IMAGES["victory"], minSearchTime=minSearchTime):
+def victory_check(search_time: float = 0) -> bool:
+    if locate(IMAGES["victory"], search_time=search_time):
         logger.info("DETECTED -- Victory")
         return True
     return False
 
 
-def defeat_check(minSearchTime: float = 0) -> bool:
-    if locate(IMAGES["defeat"], minSearchTime=minSearchTime):
+def defeat_check(search_time: float = 0) -> bool:
+    if locate(IMAGES["defeat"], search_time=search_time):
         logger.info("DETECTED -- Defeat")
         return True
     return False
 
 
-def menu_check(minSearchTime: float = 0) -> bool:
-    if locate(IMAGES["menu"], minSearchTime=minSearchTime):
+def menu_check(search_time: float = 0) -> bool:
+    if locate(IMAGES["menu"], search_time=search_time):
         logger.info("DETECTED -- Menu")
         return True
     return False
@@ -269,7 +269,7 @@ def Main_Game() -> None:
 def Exit_Game() -> None:
     logger.info("STATUS -- Game ending, returning to menu")
 
-    if victory_check(minSearchTime=5):
+    if victory_check(search_time=5):
         click(COORDS.VICTORY_CONTINUE)
         time.sleep(0.2)
     elif not defeat_check():
@@ -283,7 +283,7 @@ def Exit_Game() -> None:
 
 ###########################################[MAIN LOOP]###########################################
 logger.info("Focus BTD6 window within 5 seconds")
-if not menu_check(minSearchTime=5):
+if not menu_check(search_time=5):
     raise Exception("BTD6 window not detected")
 time.sleep(0.5)
 
