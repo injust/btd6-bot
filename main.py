@@ -92,14 +92,10 @@ class Sub(Tower):
 _, height = pyautogui.size()
 image_dir = Path.cwd() / "Support_Files"
 
-
-class IMAGES(Enum):
-    VICTORY = cv2.imread(str(image_dir / f"{height}_victory.png"), flags=cv2.IMREAD_GRAYSCALE)
-    DEFEAT = cv2.imread(str(image_dir / f"{height}_defeat.png"), flags=cv2.IMREAD_GRAYSCALE)
-    MENU = cv2.imread(str(image_dir / f"{height}_menu.png"), flags=cv2.IMREAD_GRAYSCALE)
-    EASTER = cv2.imread(str(image_dir / f"{height}_easter.png"), flags=cv2.IMREAD_GRAYSCALE)
-    OBYN = cv2.imread(str(image_dir / f"{height}_obyn.png"), flags=cv2.IMREAD_GRAYSCALE)
-
+IMAGES = {
+    name: cv2.imread(str(image_dir / f"{height}_{name}.png"), flags=cv2.IMREAD_GRAYSCALE)
+    for name in ["victory", "defeat", "menu", "easter", "obyn"]
+}
 
 reso_16_9: list[tuple[int, int]] = [(1920, 1080), (2560, 1440), (3840, 2160)]
 
@@ -147,7 +143,7 @@ def sleep(seconds: float) -> None:
     time.sleep(seconds)
 
 
-def locate(image: IMAGES) -> bool:
+def locate(image: cv2.typing.MatLike) -> bool:
     try:
         pyautogui.locateOnScreen(image, grayscale=True, confidence=0.9)
         return True
@@ -156,7 +152,7 @@ def locate(image: IMAGES) -> bool:
 
 
 def obyn_check() -> None:
-    if locate(IMAGES.OBYN):
+    if locate(IMAGES["obyn"]):
         return
 
     logger.info("STATUS -- Obyn not detected, changing hero")
@@ -165,11 +161,11 @@ def obyn_check() -> None:
     click(COORDS.HERO_CONFIRM)
     press_key("esc")
 
-    assert locate(IMAGES.OBYN)
+    assert locate(IMAGES["obyn"])
 
 
 def easter_event_check() -> None:
-    if not locate(IMAGES.EASTER):
+    if not locate(IMAGES["easter"]):
         return
 
     logger.info("DETECTED -- Easter")
@@ -192,21 +188,21 @@ def easter_event_check() -> None:
 
 
 def victory_check() -> bool:
-    if locate(IMAGES.VICTORY):
+    if locate(IMAGES["victory"]):
         logger.info("DETECTED -- Victory")
         return True
     return False
 
 
 def defeat_check() -> bool:
-    if locate(IMAGES.DEFEAT):
+    if locate(IMAGES["defeat"]):
         logger.info("DETECTED -- Defeat")
         return True
     return False
 
 
 def menu_check() -> bool:
-    if locate(IMAGES.MENU):
+    if locate(IMAGES["menu"]):
         logger.info("DETECTED -- Menu")
         return True
     return False
