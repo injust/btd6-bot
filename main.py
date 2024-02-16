@@ -8,6 +8,7 @@ from enum import Enum
 from pathlib import Path
 from typing import Any, Literal
 
+import cv2
 import pyautogui
 import pydirectinput
 from loguru import logger
@@ -87,15 +88,17 @@ class Sub(Tower):
 
 ###########################################[SETUP]###########################################
 
-current_directory = Path.cwd()
-
 # Used to determine which pictures are needed -- pictures are resolution specific!
 _, height = pyautogui.size()
-victory_path = current_directory / "Support_Files" / f"{height}_victory.png"
-defeat_path = current_directory / "Support_Files" / f"{height}_defeat.png"
-menu_path = current_directory / "Support_Files" / f"{height}_menu.png"
-easter_path = current_directory / "Support_Files" / f"{height}_easter.png"
-obyn_path = current_directory / "Support_Files" / f"{height}_obyn.png"
+image_dir = Path.cwd() / "Support_Files"
+
+
+class IMAGES(Enum):
+    VICTORY = cv2.imread(str(image_dir / f"{height}_victory.png"), flags=cv2.IMREAD_GRAYSCALE)
+    DEFEAT = cv2.imread(str(image_dir / f"{height}_defeat.png"), flags=cv2.IMREAD_GRAYSCALE)
+    MENU = cv2.imread(str(image_dir / f"{height}_menu.png"), flags=cv2.IMREAD_GRAYSCALE)
+    EASTER = cv2.imread(str(image_dir / f"{height}_easter.png"), flags=cv2.IMREAD_GRAYSCALE)
+    OBYN = cv2.imread(str(image_dir / f"{height}_obyn.png"), flags=cv2.IMREAD_GRAYSCALE)
 
 
 reso_16_9: list[tuple[int, int]] = [(1920, 1080), (2560, 1440), (3840, 2160)]
@@ -144,16 +147,16 @@ def sleep(seconds: float) -> None:
     time.sleep(seconds)
 
 
-def locate(image: Path) -> bool:
+def locate(image: IMAGES) -> bool:
     try:
-        pyautogui.locateOnScreen(str(image), grayscale=True, confidence=0.9)
+        pyautogui.locateOnScreen(image, grayscale=True, confidence=0.9)
         return True
     except pyautogui.ImageNotFoundException:
         return False
 
 
 def obyn_check() -> None:
-    if locate(obyn_path):
+    if locate(IMAGES.OBYN):
         return
 
     logger.info("STATUS -- Obyn not detected, changing hero")
@@ -162,11 +165,11 @@ def obyn_check() -> None:
     click(COORDS.HERO_CONFIRM)
     press_key("esc")
 
-    assert locate(obyn_path)
+    assert locate(IMAGES.OBYN)
 
 
 def easter_event_check() -> None:
-    if not locate(easter_path):
+    if not locate(IMAGES.EASTER):
         return
 
     logger.info("DETECTED -- Easter")
@@ -189,21 +192,21 @@ def easter_event_check() -> None:
 
 
 def victory_check() -> bool:
-    if locate(victory_path):
+    if locate(IMAGES.VICTORY):
         logger.info("DETECTED -- Victory")
         return True
     return False
 
 
 def defeat_check() -> bool:
-    if locate(defeat_path):
+    if locate(IMAGES.DEFEAT):
         logger.info("DETECTED -- Defeat")
         return True
     return False
 
 
 def menu_check() -> bool:
-    if locate(menu_path):
+    if locate(IMAGES.MENU):
         logger.info("DETECTED -- Menu")
         return True
     return False
