@@ -187,22 +187,22 @@ def easter_event_check() -> None:
     time.sleep(2)
 
 
-def victory_check() -> bool:
-    if locate(IMAGES["victory"]):
+def victory_check(minSearchTime: float = 0) -> bool:
+    if locate(IMAGES["victory"], minSearchTime=minSearchTime):
         logger.info("DETECTED -- Victory")
         return True
     return False
 
 
-def defeat_check() -> bool:
-    if locate(IMAGES["defeat"]):
+def defeat_check(minSearchTime: float = 0) -> bool:
+    if locate(IMAGES["defeat"], minSearchTime=minSearchTime):
         logger.info("DETECTED -- Defeat")
         return True
     return False
 
 
-def menu_check() -> bool:
-    if locate(IMAGES["menu"]):
+def menu_check(minSearchTime: float = 0) -> bool:
+    if locate(IMAGES["menu"], minSearchTime=minSearchTime):
         logger.info("DETECTED -- Menu")
         return True
     return False
@@ -263,13 +263,13 @@ def Main_Game() -> None:
     sleep(43.5)
 
     ninja.upgrade(1)
-    sleep(65)
+    sleep(55.5)
 
 
 def Exit_Game() -> None:
-    logger.info("STATUS -- Game ending, restarting loop")
+    logger.info("STATUS -- Game ending, returning to menu")
 
-    if victory_check():
+    if victory_check(minSearchTime=5):
         click(COORDS.VICTORY_CONTINUE)
         time.sleep(0.2)
     elif not defeat_check():
@@ -283,7 +283,7 @@ def Exit_Game() -> None:
 
 ###########################################[MAIN LOOP]###########################################
 logger.info("Focus BTD6 window within 5 seconds")
-if not locate(IMAGES["menu"], minSearchTime=5):
+if not menu_check(minSearchTime=5):
     raise Exception("BTD6 window not detected")
 time.sleep(0.5)
 
