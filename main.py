@@ -10,12 +10,13 @@ from pathlib import Path
 from typing import Any, Literal
 
 import cv2
+import numpy as np
 import pyautogui
 import pydirectinput
 import pyscreeze
 from cv2.typing import MatLike
-from fast_ctypes_screenshots import ScreenshotOfOneMonitor
 from loguru import logger
+from mss import mss
 
 
 # positions mapped at 2560x1440
@@ -156,18 +157,16 @@ def sleep(seconds: float) -> None:
 
 
 def locate_on_screen(
-    image: MatLike,
-    min_search_time: float = 0,
-    *,
-    region: tuple[int, int, int, int] | None = None,
-    confidence: float = 0.999,
+    image: MatLike, min_search_time: float = 0, *, region: pyscreeze.Box | None = None, confidence: float = 0.999
 ) -> pyscreeze.Box | None:
-    """Similar to `pyscreeze.locateOnScreen()`, but uses `fast-ctypes-screenshots` for screenshots."""
-    with ScreenshotOfOneMonitor() as sm:
+    """Similar to `pyscreeze.locateOnScreen()`, but uses `mss` for screenshots."""
+    monitor = (pyscreeze.Box(0, 0, *pyautogui.size()))._asdict()
+
+    with mss() as sct:
         start_time = time.monotonic()
         while True:
             with timer_ns() as t:
-                screenshot = sm.screenshot_one_monitor()
+                screenshot = cv2.cvtColor(np.asarray(sct.grab(monitor)), cv2.COLOR_BGRA2GRAY)
             logger.debug(f"Screenshot took {t() / 1e6} ms")
 
             with timer_ns() as t:
@@ -180,7 +179,7 @@ def locate_on_screen(
                 return None
 
 
-def locate(name: str, min_search_time: float = 0, *, region: tuple[int, int, int, int] | None = None) -> bool:
+def locate(name: str, min_search_time: float = 0, *, region: pyscreeze.Box | None = None) -> bool:
     with timer_ns() as t:
         box = locate_on_screen(IMAGES[name], min_search_time, region=region, confidence=0.9)
 
