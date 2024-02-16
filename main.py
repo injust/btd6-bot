@@ -143,9 +143,9 @@ def sleep(seconds: float) -> None:
     time.sleep(seconds)
 
 
-def locate(image: cv2.typing.MatLike) -> bool:
+def locate(image: cv2.typing.MatLike, minSearchTime: float = 0) -> bool:
     try:
-        pyautogui.locateOnScreen(image, grayscale=True, confidence=0.9)
+        pyautogui.locateOnScreen(image, minSearchTime=minSearchTime, grayscale=True, confidence=0.9)
         return True
     except pyautogui.ImageNotFoundException:
         return False
@@ -282,8 +282,10 @@ def Exit_Game() -> None:
 
 
 ###########################################[MAIN LOOP]###########################################
-logger.info("Starting code, move cursor over bloons in the next 5 seconds")
-time.sleep(5)
+logger.info("Focus BTD6 window within 5 seconds")
+if not locate(IMAGES["menu"], minSearchTime=5):
+    raise Exception("BTD6 window not detected")
+time.sleep(0.5)
 
 obyn_check()
 
