@@ -88,12 +88,11 @@ class Sub(Tower):
 
 ###########################################[SETUP]###########################################
 
-# Used to determine which pictures are needed -- pictures are resolution specific!
-_, height = pyautogui.size()
-image_dir = Path.cwd() / "Support_Files"
+# Determine which pictures are loaded (pictures are resolution-specific!)
+screen_height = pyautogui.size()[1]
 
 IMAGES = {
-    name: cv2.imread(str(image_dir / f"{height}_{name}.png"), flags=cv2.IMREAD_GRAYSCALE)
+    name: cv2.imread(str(Path.cwd() / "images" / f"{screen_height}_{name}.png"), flags=cv2.IMREAD_GRAYSCALE)
     for name in ["victory", "defeat", "menu", "easter", "obyn"]
 }
 
