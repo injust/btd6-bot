@@ -84,7 +84,7 @@ def check_easter_event() -> None:
     click(COORDS.EASTER_INSTA_R)
     time.sleep(1)
     click(COORDS.EASTER_INSTA_R)
-    time.sleep(2)
+    time.sleep(1.5)
 
     click(COORDS.EASTER_CONTINUE)
     time.sleep(0.5)
