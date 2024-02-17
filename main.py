@@ -260,7 +260,7 @@ def easter_event_check() -> None:
     time.sleep(2)
 
     click(COORDS.EASTER_CONTINUE)
-    time.sleep(1)
+    time.sleep(0.5)
     press("esc")
     time.sleep(2)
 
