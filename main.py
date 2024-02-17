@@ -101,8 +101,6 @@ class Sub(Tower):
 
 ###########################################[SETUP]###########################################
 
-pyscreeze.USE_IMAGE_NOT_FOUND_EXCEPTION = False
-
 if pyautogui.size()[1] != 1440:
     raise Exception("Unsupported resolution")
 
@@ -151,8 +149,19 @@ def sleep(seconds: float) -> None:
     time.sleep(seconds)
 
 
+def locate_opencv(needle: MatLike, haystack: MatLike) -> tuple[pyscreeze.Box, float]:
+    """Simplified version of `pyscreeze._locateAll_opencv()."""
+    # Avoid semi-cryptic OpenCV error if bad size
+    if haystack.shape[0] < needle.shape[0] or haystack.shape[1] < needle.shape[1]:
+        raise ValueError("Needle image dimensions exceed haystack image dimensions")
+
+    results = cv2.matchTemplate(haystack, needle, cv2.TM_CCOEFF_NORMED)
+    _, confidence, _, coords = cv2.minMaxLoc(results)
+    return pyscreeze.Box(*coords, *needle.shape), confidence
+
+
 def locate_on_screen(
-    image: MatLike, min_search_time: float = 0, *, region: pyscreeze.Box | None = None, confidence: float = 0.999
+    image: MatLike, min_search_time: float = 0, *, region: pyscreeze.Box | None = None, min_confidence: float = 0.999
 ) -> pyscreeze.Box | None:
     """Similar to `pyscreeze.locateOnScreen()`, but uses `mss` for screenshots and only screenshots the search region."""
     if region is None:
@@ -166,10 +175,10 @@ def locate_on_screen(
             logger.debug(f"Screenshot took {t() / 1e6} ms")
 
             with timer_ns() as t:
-                box = pyscreeze.locate(image, screenshot, grayscale=True, confidence=confidence)
-            logger.debug(f"pyscreeze.locate() took {t() / 1e6} ms")
+                box, confidence = locate_opencv(image, screenshot)
+            logger.debug(f"locate_opencv() took {t() / 1e6} ms, confidence={confidence:.3f}")
 
-            if box is not None:
+            if confidence >= min_confidence:
                 # Adjust box to return coordinates relative to screen instead of search region
                 return box._replace(left=box.left + region.left, top=box.top + region.top)
             elif time.monotonic() - start_time > min_search_time:
@@ -178,7 +187,7 @@ def locate_on_screen(
 
 def locate(name: str, min_search_time: float = 0, *, region: pyscreeze.Box | None = None) -> bool:
     with timer_ns() as t:
-        box = locate_on_screen(IMAGES[name], min_search_time, region=region, confidence=0.9)
+        box = locate_on_screen(IMAGES[name], min_search_time, region=region, min_confidence=0.9)
 
     if box is None:
         logger.debug(f"{name} not found after {t() / 1e6} ms")
