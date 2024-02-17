@@ -17,9 +17,5 @@ The script plays the Dark Castle map on Easy difficulty, collects any Collection
 
 ## Supported resolutions
 
-- 1920x1080
-- 2160x1080
 - 2560x1440
 - 3440×1440
-- 3840x2160
-- 5120×2160

@@ -7,7 +7,7 @@ from collections.abc import Callable, Generator
 from contextlib import contextmanager
 from enum import Enum
 from pathlib import Path
-from typing import Any, Literal
+from typing import Any, Literal, overload
 
 import cv2
 import numpy as np
@@ -57,7 +57,7 @@ class Tower(ABC):
         self.upgrades = [0] * 3
 
         logger.info(f"Placing down {type(self).__name__}")
-        pyautogui.moveTo(scaling(*self.coords))
+        pyautogui.moveTo(padding(self.coords))
         press(self.hotkey)
         pyautogui.click()
         time.sleep(0.1)
@@ -102,15 +102,13 @@ class Sub(Tower):
 
 pyscreeze.USE_IMAGE_NOT_FOUND_EXCEPTION = False
 
-# Determine which pictures are loaded (pictures are resolution-specific!)
-screen_width, screen_height = pyautogui.size()
+if pyautogui.size()[1] != 1440:
+    raise Exception("Unsupported resolution")
 
 IMAGES = {
-    name: cv2.imread(str(Path.cwd() / "images" / f"{screen_height}_{name}.png"), flags=cv2.IMREAD_GRAYSCALE)
+    name: cv2.imread(str(Path.cwd() / "images" / f"{name}.png"), flags=cv2.IMREAD_GRAYSCALE)
     for name in ["victory", "defeat", "menu", "easter", "obyn"]
 }
-
-reso_16_9: list[tuple[int, int]] = [(1920, 1080), (2560, 1440), (3840, 2160)]
 
 
 @contextmanager
@@ -120,29 +118,26 @@ def timer_ns() -> Generator[Callable[[], int], Any, None]:
     t2 = time.time_ns()
 
 
-def scaling(x: int, y: int, add_padding: bool = True) -> tuple[int, int]:
-    """Adjust coordinates from 2560x1440 to current resolution and add padding to account for 21:9."""
-    width, height = pyautogui.size()
-    for res in reso_16_9:
-        if height == res[1]:
-            padding = (width - res[0]) // 2
-            if width == res[0]:
-                # 16:9 resolution
-                x = x * width // 2560
-                break
-            else:
-                # 21:9 resolution
-                break
-    else:
-        raise Exception("Unsupported resolution")
-    y = y * height // 1440
-    if add_padding:
-        x += padding
-    return x, y
+@overload
+def padding(coords: tuple[int, int]) -> tuple[int, int]: ...
+
+
+@overload
+def padding(coords: pyscreeze.Box) -> pyscreeze.Box: ...
+
+
+def padding(coords: tuple[int, int] | pyscreeze.Box) -> tuple[int, int] | pyscreeze.Box:
+    """Add padding to support 3440×1440."""
+    screen_width = pyautogui.size()[0]
+    padding = (screen_width - 2560) // 2
+
+    if isinstance(coords, pyscreeze.Box):
+        return coords._replace(left=coords.left + padding)
+    return coords[0] + padding, coords[1]
 
 
 def click(coords: COORDS, add_padding: bool = True) -> None:
-    pyautogui.click(scaling(*coords, add_padding=add_padding))
+    pyautogui.click(padding(coords) if add_padding else coords)
     time.sleep(0.2)
 
 
@@ -193,29 +188,16 @@ def locate(name: str, min_search_time: float = 0, *, region: pyscreeze.Box | Non
         return True
 
 
-def calculate_search_region(region_2560_1440: pyscreeze.Box, add_padding: bool = True) -> pyscreeze.Box:
-    left, top = scaling(region_2560_1440.left, region_2560_1440.top, add_padding=add_padding)
-    return pyscreeze.Box(
-        left := max(0, left - region_2560_1440.width),
-        top := max(0, top - region_2560_1440.height),
-        min(screen_width - left, region_2560_1440.width * 2),
-        min(screen_height - top, region_2560_1440.height * 2),
-    )
-
-
 def locate_menu(min_search_time: float = 0) -> bool:
-    search_region = calculate_search_region(IMAGE_BOXES.MENU, add_padding=False)
-    return locate("menu", min_search_time, region=search_region)
+    return locate("menu", min_search_time, region=IMAGE_BOXES.MENU)
 
 
 def locate_obyn(min_search_time: float = 0) -> bool:
-    search_region = calculate_search_region(IMAGE_BOXES.OBYN)
-    return locate("obyn", min_search_time, region=search_region)
+    return locate("obyn", min_search_time, region=padding(IMAGE_BOXES.OBYN))
 
 
 def locate_victory(min_search_time: float = 0) -> bool:
-    search_region = calculate_search_region(IMAGE_BOXES.VICTORY)
-    return locate("victory", min_search_time, region=search_region)
+    return locate("victory", min_search_time, region=padding(IMAGE_BOXES.VICTORY))
 
 
 def obyn_check() -> None:
