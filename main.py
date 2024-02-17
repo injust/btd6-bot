@@ -73,8 +73,9 @@ class Tower(ABC):
         self.upgrades = [0] * 3
 
         logger.info(f"Placing down {type(self).__name__}")
+        pydirectinput.moveTo(*padding(self.coords))
         pydirectinput.press(self.hotkey)
-        pydirectinput.click(*padding(self.coords))
+        pydirectinput.click()
 
     def __str__(self) -> str:
         return f"{''.join(map(str, self.upgrades))} {type(self).__name__} at {self.coords}"
@@ -233,6 +234,7 @@ def obyn_check() -> None:
 
     logger.info("Obyn not selected, changing hero")
     click(COORDS.HERO_SELECT)
+    time.sleep(0.1)
     click(COORDS.HERO_OBYN, add_padding=False)
     click(COORDS.HERO_CONFIRM)
     press("esc")
@@ -288,11 +290,12 @@ def main_game() -> None:
 
     time.sleep(0.2)
     # Start and fast-forward the game
-    pydirectinput.press("space", presses=2)
+    pydirectinput.press("space", presses=2, interval=0.1)
 
     Obyn(COORDS.TOWER_OBYN)
 
     sub = Sub(COORDS.TOWER_SUB)
+    time.sleep(0.1)
     sub.upgrade(1)
     sleep(22)
     sub.upgrade(1)
@@ -321,7 +324,7 @@ def main_game() -> None:
     sleep(43.5)
 
     ninja.upgrade(1)
-    sleep(55)
+    sleep(64)
 
 
 def exit_game() -> None:
@@ -329,7 +332,7 @@ def exit_game() -> None:
 
     if locate_victory(5):
         click(COORDS.VICTORY_CONTINUE)
-        time.sleep(0.2)
+        time.sleep(0.5)
     elif not locate("defeat"):
         raise Exception("Victory/Defeat not detected")
 
