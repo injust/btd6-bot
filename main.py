@@ -153,8 +153,8 @@ def click(coords: Point, add_padding: bool = True) -> None:
     time.sleep(0.1)
 
 
-def press(key: str) -> None:
-    pydirectinput.press(key)
+def press(key: str, presses: int = 1) -> None:
+    pydirectinput.press(key, presses=presses, interval=0.1)
     time.sleep(0.1)
 
 
@@ -292,7 +292,7 @@ def main_game() -> None:
 
     time.sleep(0.2)
     # Start and fast-forward the game
-    pydirectinput.press("space", presses=2, interval=0.1)
+    press("space", presses=2)
 
     Obyn(COORDS.TOWER_OBYN)
 
