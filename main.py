@@ -215,7 +215,7 @@ def obyn_check() -> None:
     click(COORDS.HERO_CONFIRM)
     press("esc")
 
-    assert locate_obyn()
+    assert locate_obyn(0.5)
 
 
 def easter_event_check() -> None:
