@@ -2,6 +2,4 @@ loguru>=0.7.2
 mss>=9.0.1
 numpy>=1.26.4
 opencv-python>=4.9.0.80
-PyAutoGUI>=0.9.54
 PyDirectInput>=1.0.4
-types-PyAutoGUI>=0.9.3.20240106

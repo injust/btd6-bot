@@ -11,7 +11,6 @@ from typing import Any, Literal, NamedTuple, overload
 
 import cv2
 import numpy as np
-import pyautogui
 import pydirectinput
 from cv2.typing import MatLike
 from loguru import logger
@@ -28,6 +27,11 @@ class Box(NamedTuple):
 class Point(NamedTuple):
     x: int
     y: int
+
+
+class Size(NamedTuple):
+    width: int
+    height: int
 
 
 # positions mapped at 2560x1440
@@ -69,9 +73,9 @@ class Tower(ABC):
         self.upgrades = [0] * 3
 
         logger.info(f"Placing down {type(self).__name__}")
-        pyautogui.moveTo(padding(self.coords))
+        pydirectinput.moveTo(*padding(self.coords))
         press(self.hotkey)
-        pyautogui.click()
+        pydirectinput.click()
         time.sleep(0.1)
 
     def __str__(self) -> str:
@@ -112,7 +116,8 @@ class Sub(Tower):
 
 ###########################################[SETUP]###########################################
 
-if pyautogui.size().height != 1440:
+screen_size = Size(*pydirectinput.size())
+if screen_size.height != 1440:
     raise Exception("Unsupported resolution")
 
 IMAGES = {
@@ -137,7 +142,7 @@ def padding(coords: Box) -> Box: ...
 
 def padding(coords: Point | Box) -> Point | Box:
     """Add padding to support 3440×1440."""
-    padding = (pyautogui.size().width - 2560) // 2
+    padding = (screen_size.width - 2560) // 2
 
     if isinstance(coords, Point):
         return coords._replace(x=coords.x + padding)
@@ -145,7 +150,7 @@ def padding(coords: Point | Box) -> Point | Box:
 
 
 def click(coords: Point, add_padding: bool = True) -> None:
-    pyautogui.click(padding(coords) if add_padding else coords)
+    pydirectinput.click(*(padding(coords) if add_padding else coords))
     time.sleep(0.2)
 
 
@@ -175,7 +180,7 @@ def locate_on_screen(
 ) -> Box | None:
     """Similar to `pyscreeze.locateOnScreen()`, but uses `mss` for screenshots and only screenshots the search region."""
     if region is None:
-        region = Box(0, 0, *pyautogui.size())
+        region = Box(0, 0, *screen_size)
 
     with mss() as sct:
         start_time = time.monotonic()
