@@ -25,26 +25,31 @@ class Box(NamedTuple):
     height: int
 
 
+class Point(NamedTuple):
+    x: int
+    y: int
+
+
 # positions mapped at 2560x1440
-class COORDS(tuple[int, int], Enum):
-    HOME_START = (1123, 1248)
-    EXPERT_SELECTION = (1778, 1304)
-    DARK_CASTLE = (730, 780)
-    EASY_DIFFICULTY = (838, 550)
-    STANDARD_MODE = (847, 780)
-    OVERWRITE_SAVE = (1520, 974)
-    TOWER_OBYN = (738, 600)
-    TOWER_SUB = (1454, 575)
-    TOWER_NINJA = (738, 844)
-    VICTORY_CONTINUE = (1283, 1215)
-    VICTORY_HOME = (957, 1135)
-    EASTER_COLLECTION = (1279, 911)
-    EASTER_INSTA_L = (1075, 750)
-    EASTER_INSTA_R = (1480, 750)
-    EASTER_CONTINUE = (1280, 1330)
-    HERO_SELECT = (800, 1265)
-    HERO_OBYN = (135, 550)
-    HERO_CONFIRM = (1490, 815)
+class COORDS(Point, Enum):
+    HOME_START = Point(1123, 1248)
+    EXPERT_SELECTION = Point(1778, 1304)
+    DARK_CASTLE = Point(730, 780)
+    EASY_DIFFICULTY = Point(838, 550)
+    STANDARD_MODE = Point(847, 780)
+    OVERWRITE_SAVE = Point(1520, 974)
+    TOWER_OBYN = Point(738, 600)
+    TOWER_SUB = Point(1454, 575)
+    TOWER_NINJA = Point(738, 844)
+    VICTORY_CONTINUE = Point(1283, 1215)
+    VICTORY_HOME = Point(957, 1135)
+    EASTER_COLLECTION = Point(1279, 911)
+    EASTER_INSTA_L = Point(1075, 750)
+    EASTER_INSTA_R = Point(1480, 750)
+    EASTER_CONTINUE = Point(1280, 1330)
+    HERO_SELECT = Point(800, 1265)
+    HERO_OBYN = Point(135, 550)
+    HERO_CONFIRM = Point(1490, 815)
 
 
 # position of each screenshot at 2560x1440
@@ -56,10 +61,10 @@ class IMAGE_BOXES(Box, Enum):
 
 
 class Tower(ABC):
-    coords: COORDS
+    coords: Point
     upgrades: list[int]
 
-    def __init__(self, coords: COORDS) -> None:
+    def __init__(self, coords: Point) -> None:
         self.coords = coords
         self.upgrades = [0] * 3
 
@@ -123,23 +128,23 @@ def timer_ns() -> Generator[Callable[[], int], Any, None]:
 
 
 @overload
-def padding(coords: tuple[int, int]) -> tuple[int, int]: ...
+def padding(coords: Point) -> Point: ...
 
 
 @overload
 def padding(coords: Box) -> Box: ...
 
 
-def padding(coords: tuple[int, int] | Box) -> tuple[int, int] | Box:
+def padding(coords: Point | Box) -> Point | Box:
     """Add padding to support 3440×1440."""
     padding = (pyautogui.size().width - 2560) // 2
 
-    if isinstance(coords, Box):
-        return coords._replace(left=coords.left + padding)
-    return coords[0] + padding, coords[1]
+    if isinstance(coords, Point):
+        return coords._replace(x=coords.x + padding)
+    return coords._replace(left=coords.left + padding)
 
 
-def click(coords: COORDS, add_padding: bool = True) -> None:
+def click(coords: Point, add_padding: bool = True) -> None:
     pyautogui.click(padding(coords) if add_padding else coords)
     time.sleep(0.2)
 
