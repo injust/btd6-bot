@@ -7,16 +7,22 @@ from collections.abc import Callable, Generator
 from contextlib import contextmanager
 from enum import Enum
 from pathlib import Path
-from typing import Any, Literal, overload
+from typing import Any, Literal, NamedTuple, overload
 
 import cv2
 import numpy as np
 import pyautogui
 import pydirectinput
-import pyscreeze
 from cv2.typing import MatLike
 from loguru import logger
 from mss import mss
+
+
+class Box(NamedTuple):
+    left: int
+    top: int
+    width: int
+    height: int
 
 
 # positions mapped at 2560x1440
@@ -42,11 +48,11 @@ class COORDS(tuple[int, int], Enum):
 
 
 # position of each screenshot at 2560x1440
-class IMAGE_BOXES(pyscreeze.Box, Enum):
-    MENU = pyscreeze.Box(45, 594, 119, 101)
-    OBYN = pyscreeze.Box(717, 1219, 188, 130)
-    PLAY = pyscreeze.Box(2206, 1281, 145, 148)
-    VICTORY = pyscreeze.Box(943, 187, 668, 116)
+class IMAGE_BOXES(Box, Enum):
+    MENU = Box(45, 594, 119, 101)
+    OBYN = Box(717, 1219, 188, 130)
+    PLAY = Box(2206, 1281, 145, 148)
+    VICTORY = Box(943, 187, 668, 116)
 
 
 class Tower(ABC):
@@ -121,14 +127,14 @@ def padding(coords: tuple[int, int]) -> tuple[int, int]: ...
 
 
 @overload
-def padding(coords: pyscreeze.Box) -> pyscreeze.Box: ...
+def padding(coords: Box) -> Box: ...
 
 
-def padding(coords: tuple[int, int] | pyscreeze.Box) -> tuple[int, int] | pyscreeze.Box:
+def padding(coords: tuple[int, int] | Box) -> tuple[int, int] | Box:
     """Add padding to support 3440×1440."""
     padding = (pyautogui.size().width - 2560) // 2
 
-    if isinstance(coords, pyscreeze.Box):
+    if isinstance(coords, Box):
         return coords._replace(left=coords.left + padding)
     return coords[0] + padding, coords[1]
 
@@ -148,7 +154,7 @@ def sleep(seconds: float) -> None:
     time.sleep(seconds)
 
 
-def locate_opencv(needle: MatLike, haystack: MatLike) -> tuple[pyscreeze.Box, float]:
+def locate_opencv(needle: MatLike, haystack: MatLike) -> tuple[Box, float]:
     """Simplified version of `pyscreeze._locateAll_opencv()."""
     # Avoid semi-cryptic OpenCV error if bad size
     if haystack.shape[0] < needle.shape[0] or haystack.shape[1] < needle.shape[1]:
@@ -156,15 +162,15 @@ def locate_opencv(needle: MatLike, haystack: MatLike) -> tuple[pyscreeze.Box, fl
 
     results = cv2.matchTemplate(haystack, needle, cv2.TM_CCOEFF_NORMED)
     _, confidence, _, coords = cv2.minMaxLoc(results)
-    return pyscreeze.Box(*coords, *needle.shape), confidence
+    return Box(*coords, *needle.shape), confidence
 
 
 def locate_on_screen(
-    image: MatLike, min_search_time: float = 0, *, region: pyscreeze.Box | None = None, min_confidence: float = 0.999
-) -> pyscreeze.Box | None:
+    image: MatLike, min_search_time: float = 0, *, region: Box | None = None, min_confidence: float = 0.999
+) -> Box | None:
     """Similar to `pyscreeze.locateOnScreen()`, but uses `mss` for screenshots and only screenshots the search region."""
     if region is None:
-        region = pyscreeze.Box(0, 0, *pyautogui.size())
+        region = Box(0, 0, *pyautogui.size())
 
     with mss() as sct:
         start_time = time.monotonic()
@@ -184,7 +190,7 @@ def locate_on_screen(
                 return None
 
 
-def locate(name: str, min_search_time: float = 0, *, region: pyscreeze.Box | None = None) -> bool:
+def locate(name: str, min_search_time: float = 0, *, region: Box | None = None) -> bool:
     with timer_ns() as t:
         box = locate_on_screen(IMAGES[name], min_search_time, region=region, min_confidence=0.9)
 
