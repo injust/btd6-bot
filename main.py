@@ -190,7 +190,7 @@ def locate_on_screen(
 
             with timer_ns() as t:
                 box, confidence = locate_opencv(image, screenshot)
-            logger.debug(f"locate_opencv() took {t() / 1e6} ms, confidence={confidence:.3f}")
+            logger.debug(f"locate_opencv() took {t() / 1e6} ms, found {box} with confidence={confidence:.3f}")
 
             if confidence >= min_confidence:
                 # Adjust box to return coordinates relative to screen instead of search region
