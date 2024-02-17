@@ -45,6 +45,7 @@ class COORDS(tuple[int, int], Enum):
 class IMAGE_BOXES(pyscreeze.Box, Enum):
     MENU = pyscreeze.Box(45, 594, 119, 101)
     OBYN = pyscreeze.Box(717, 1219, 188, 130)
+    PLAY = pyscreeze.Box(2206, 1281, 145, 148)
     VICTORY = pyscreeze.Box(943, 187, 668, 116)
 
 
@@ -106,8 +107,7 @@ if pyautogui.size()[1] != 1440:
     raise Exception("Unsupported resolution")
 
 IMAGES = {
-    name: cv2.imread(str(Path.cwd() / "images" / f"{name}.png"), flags=cv2.IMREAD_GRAYSCALE)
-    for name in ["victory", "defeat", "menu", "easter", "obyn"]
+    path.stem: cv2.imread(str(path), flags=cv2.IMREAD_GRAYSCALE) for path in (Path.cwd() / "images").glob("*.png")
 }
 
 
@@ -196,6 +196,10 @@ def locate_obyn(min_search_time: float = 0) -> bool:
     return locate("obyn", min_search_time, region=padding(IMAGE_BOXES.OBYN))
 
 
+def locate_play(min_search_time: float = 0) -> bool:
+    return locate("play", min_search_time, region=padding(IMAGE_BOXES.PLAY))
+
+
 def locate_victory(min_search_time: float = 0) -> bool:
     return locate("victory", min_search_time, region=padding(IMAGE_BOXES.VICTORY))
 
@@ -252,12 +256,15 @@ def select_map() -> None:
     click(COORDS.STANDARD_MODE)
     click(COORDS.OVERWRITE_SAVE)
 
-    sleep(3)
-
 
 def main_game() -> None:
     logger.info("Starting game")
 
+    sleep(1.5)
+    if not locate_play(3):
+        raise Exception("Play button not detected")
+
+    time.sleep(0.2)
     # Start and fast-forward the game
     pydirectinput.press("space", presses=2)
 
@@ -298,7 +305,7 @@ def main_game() -> None:
 def exit_game() -> None:
     logger.info("Game ending, returning to menu")
 
-    if locate_victory(min_search_time=5):
+    if locate_victory(5):
         click(COORDS.VICTORY_CONTINUE)
         time.sleep(0.2)
     elif not locate("defeat"):
@@ -315,7 +322,7 @@ def exit_game() -> None:
 @logger.catch(onerror=lambda _: sys.exit(1))
 def main() -> None:
     logger.info("Focus the BTD6 window within 5 seconds")
-    if not locate_menu(min_search_time=5):
+    if not locate_menu(5):
         raise Exception("BTD6 menu not detected")
     time.sleep(0.5)
 
