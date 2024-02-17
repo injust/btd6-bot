@@ -73,10 +73,8 @@ class Tower(ABC):
         self.upgrades = [0] * 3
 
         logger.info(f"Placing down {type(self).__name__}")
-        pydirectinput.moveTo(*padding(self.coords))
-        press(self.hotkey)
-        pydirectinput.click()
-        time.sleep(0.1)
+        pydirectinput.press(self.hotkey)
+        pydirectinput.click(*padding(self.coords))
 
     def __str__(self) -> str:
         return f"{''.join(map(str, self.upgrades))} {type(self).__name__} at {self.coords}"
