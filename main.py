@@ -150,12 +150,12 @@ def padding(coords: Point | Box) -> Point | Box:
 
 def click(coords: Point, add_padding: bool = True) -> None:
     pydirectinput.click(*(padding(coords) if add_padding else coords))
-    time.sleep(0.2)
+    time.sleep(0.1)
 
 
 def press(key: str) -> None:
     pydirectinput.press(key)
-    time.sleep(0.2)
+    time.sleep(0.1)
 
 
 def sleep(seconds: float) -> None:
@@ -234,7 +234,7 @@ def obyn_check() -> None:
 
     logger.info("Obyn not selected, changing hero")
     click(COORDS.HERO_SELECT)
-    time.sleep(0.1)
+    time.sleep(0.2)
     click(COORDS.HERO_OBYN, add_padding=False)
     click(COORDS.HERO_CONFIRM)
     press("esc")
@@ -273,11 +273,13 @@ def select_map() -> None:
     logger.info("Selecting map")
 
     click(COORDS.HOME_START)
+    time.sleep(0.1)
     click(COORDS.EXPERT_SELECTION)
     click(COORDS.EXPERT_SELECTION)
     click(COORDS.DARK_CASTLE)
     click(COORDS.EASY_DIFFICULTY)
     click(COORDS.STANDARD_MODE)
+    time.sleep(0.1)
     click(COORDS.OVERWRITE_SAVE)
 
 
@@ -324,7 +326,7 @@ def main_game() -> None:
     sleep(43.5)
 
     ninja.upgrade(1)
-    sleep(64)
+    sleep(67)
 
 
 def exit_game() -> None:
