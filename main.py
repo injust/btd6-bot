@@ -101,7 +101,7 @@ class Sub(Tower):
 
 ###########################################[SETUP]###########################################
 
-if pyautogui.size()[1] != 1440:
+if pyautogui.size().height != 1440:
     raise Exception("Unsupported resolution")
 
 IMAGES = {
@@ -126,8 +126,7 @@ def padding(coords: pyscreeze.Box) -> pyscreeze.Box: ...
 
 def padding(coords: tuple[int, int] | pyscreeze.Box) -> tuple[int, int] | pyscreeze.Box:
     """Add padding to support 3440×1440."""
-    screen_width = pyautogui.size()[0]
-    padding = (screen_width - 2560) // 2
+    padding = (pyautogui.size().width - 2560) // 2
 
     if isinstance(coords, pyscreeze.Box):
         return coords._replace(left=coords.left + padding)
