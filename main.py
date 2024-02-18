@@ -184,7 +184,7 @@ def select_map() -> None:
     click(COORDS.OVERWRITE_SAVE)
 
 
-def main_game() -> None:
+def play_game() -> None:
     logger.info("Starting game")
 
     sleep(1.5)
@@ -259,7 +259,7 @@ def main() -> None:
     try:
         while True:
             select_map()
-            main_game()
+            play_game()
             exit_game()
     except KeyboardInterrupt:
         logger.debug("Shutting down")
