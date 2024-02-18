@@ -3,18 +3,13 @@ from __future__ import annotations
 import sys
 import time
 from enum import Enum
-from functools import cache
-from pathlib import Path
 
-import cv2
-import numpy as np
-from cv2.typing import MatLike
 from loguru import logger
-from mss import mss
 
 from game_input import click, press
+from recognition import locate
 from towers import Ninja, Obyn, Sub
-from utils import Box, Point, padding, screen_size, sleep, timer_ns
+from utils import Box, Point, padding, screen_size, sleep
 
 
 # positions mapped at 2560x1440
@@ -51,65 +46,6 @@ class IMAGE_BOXES(Box, Enum):
 
 if screen_size().height != 1440:
     raise Exception("Unsupported resolution")
-
-
-@cache
-def load_image(file_name: str) -> MatLike:
-    path = Path.cwd() / "images" / file_name
-    if not path.is_file():
-        raise ValueError(f"{path} does not exist")
-
-    return cv2.imread(str(path), flags=cv2.IMREAD_GRAYSCALE)
-
-
-def locate_opencv(needle: MatLike, haystack: MatLike) -> tuple[Box, float]:
-    """Simplified version of `pyscreeze._locateAll_opencv()."""
-    # Avoid semi-cryptic OpenCV error if bad size
-    if haystack.shape[0] < needle.shape[0] or haystack.shape[1] < needle.shape[1]:
-        raise ValueError("Needle image dimensions exceed haystack image dimensions")
-
-    results = cv2.matchTemplate(haystack, needle, cv2.TM_CCOEFF_NORMED)
-    _, confidence, _, coords = cv2.minMaxLoc(results)
-    return Box(*coords, *needle.shape), confidence
-
-
-def locate_on_screen(
-    image: MatLike, min_search_time: float = 0, *, region: Box | None = None, min_confidence: float = 0.999
-) -> Box | None:
-    """Similar to `pyscreeze.locateOnScreen()`, but uses `mss` for screenshots and only screenshots the search region."""
-    if region is None:
-        region = Box(0, 0, *screen_size())
-
-    with mss() as sct:
-        start_time = time.monotonic()
-        while True:
-            with timer_ns() as t:
-                screenshot = cv2.cvtColor(np.asarray(sct.grab(region._asdict())), cv2.COLOR_BGRA2GRAY)
-            logger.debug(f"Screenshot took {t() / 1e6} ms")
-
-            with timer_ns() as t:
-                box, confidence = locate_opencv(image, screenshot)
-            logger.debug(f"locate_opencv() took {t() / 1e6} ms, found {box} with confidence={confidence:.3f}")
-
-            if confidence >= min_confidence:
-                # Adjust box to return coordinates relative to screen instead of search region
-                return box._replace(left=box.left + region.left, top=box.top + region.top)
-            elif time.monotonic() - start_time > min_search_time:
-                return None
-
-
-def locate(image_name: str, min_search_time: float = 0, *, region: Box | None = None) -> bool:
-    image = load_image(image_name)
-
-    with timer_ns() as t:
-        box = locate_on_screen(image, min_search_time, region=region, min_confidence=0.9)
-
-    if box is None:
-        logger.debug(f"{image_name} not found after {t() / 1e6} ms")
-        return False
-    else:
-        logger.debug(f"{image_name} located at {box} in {t() / 1e6} ms")
-        return True
 
 
 def locate_menu(min_search_time: float = 0) -> bool:
