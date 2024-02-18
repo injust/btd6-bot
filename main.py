@@ -235,7 +235,7 @@ def locate_victory(min_search_time: float = 0) -> bool:
     return locate("victory.png", min_search_time, region=padding(IMAGE_BOXES.VICTORY))
 
 
-def obyn_check() -> None:
+def check_obyn() -> None:
     logger.info("Checking for Obyn")
     if locate_obyn():
         return
@@ -250,7 +250,7 @@ def obyn_check() -> None:
     assert locate_obyn(0.5)
 
 
-def easter_event_check() -> None:
+def check_easter_event() -> None:
     if not locate("easter.png"):
         return
 
@@ -348,7 +348,7 @@ def exit_game() -> None:
 
     click(COORDS.VICTORY_HOME)
     time.sleep(2)
-    easter_event_check()
+    check_easter_event()
 
     if not locate_menu():
         raise Exception("BTD6 menu not detected")
@@ -361,7 +361,7 @@ def main() -> None:
         raise Exception("BTD6 menu not detected")
     time.sleep(0.5)
 
-    obyn_check()
+    check_obyn()
 
     try:
         while True:
