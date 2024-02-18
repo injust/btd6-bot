@@ -14,12 +14,12 @@ from utils import Box, screen_size, timer_ns
 
 
 @cache
-def load_image(file_name: str) -> MatLike:
+def load_image(file_name: str, *, grayscale: bool) -> MatLike:
     path = Path.cwd() / "images" / file_name
     if not path.is_file():
         raise ValueError(f"{path} does not exist")
 
-    return cv2.imread(str(path), flags=cv2.IMREAD_GRAYSCALE)
+    return cv2.imread(str(path), flags=cv2.IMREAD_GRAYSCALE if grayscale else cv2.IMREAD_COLOR)
 
 
 def match_template(needle: MatLike, haystack: MatLike) -> tuple[Box, float]:
@@ -34,12 +34,18 @@ def match_template(needle: MatLike, haystack: MatLike) -> tuple[Box, float]:
 
 
 def locate(
-    image_name: str, min_search_time: float = 0, *, region: Box | None = None, min_confidence: float = 0.9
+    image_name: str,
+    min_search_time: float = 0,
+    *,
+    grayscale: bool = True,
+    region: Box | None = None,
+    min_confidence: float = 0.9,
 ) -> bool:
     if region is None:
         region = Box(0, 0, *screen_size())
 
-    image = load_image(image_name)
+    image = load_image(image_name, grayscale=grayscale)
+    color_conversion = cv2.COLOR_BGRA2GRAY if grayscale else cv2.COLOR_BGRA2BGR
 
     def locate_on_screen() -> Box | None:
         """Similar to `pyscreeze.locateOnScreen()`, but uses `mss` for screenshots and only screenshots the search region."""
@@ -47,7 +53,7 @@ def locate(
             start_time = time.monotonic()
             while True:
                 with timer_ns() as t:
-                    screenshot = cv2.cvtColor(np.asarray(sct.grab(region._asdict())), cv2.COLOR_BGRA2GRAY)
+                    screenshot = cv2.cvtColor(np.asarray(sct.grab(region._asdict())), color_conversion)
                 logger.debug(f"Screenshot took {t() / 1e6} ms")
 
                 with timer_ns() as t:
