@@ -76,7 +76,7 @@ class Tower(ABC):
         logger.info(f"Placing down {type(self).__name__}")
         move_to(self.coords, sleep=False)
         press(self.hotkey, sleep=False)
-        pydirectinput.click()
+        click(sleep=False)
 
     def __str__(self) -> str:
         return f"{''.join(map(str, self.upgrades))} {type(self).__name__} at {self.coords}"
@@ -158,8 +158,19 @@ def padding(coords: Point | Box) -> Point | Box:
     return coords._replace(left=coords.left + padding)
 
 
-def click(coords: Point, *, add_padding: bool = True, sleep: bool = True) -> None:
-    pydirectinput.click(*(padding(coords) if add_padding else coords))
+@overload
+def click(*, sleep: bool = True) -> None: ...
+
+
+@overload
+def click(coords: Point, *, add_padding: bool = True, sleep: bool = True) -> None: ...
+
+
+def click(coords: Point | None = None, *, add_padding: bool = True, sleep: bool = True) -> None:
+    if coords is None:
+        pydirectinput.click()
+    else:
+        pydirectinput.click(*(padding(coords) if add_padding else coords))
 
     if sleep:
         time.sleep(0.1)
