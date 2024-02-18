@@ -3,6 +3,7 @@ from __future__ import annotations
 import sys
 import time
 from enum import Enum
+from functools import partial
 
 from loguru import logger
 
@@ -47,21 +48,10 @@ class IMAGE_BOXES(Box, Enum):
 if screen_size().height != 1440:
     raise Exception("Unsupported resolution")
 
-
-def locate_menu(min_search_time: float = 0) -> bool:
-    return locate("menu.png", min_search_time, region=IMAGE_BOXES.MENU)
-
-
-def locate_obyn(min_search_time: float = 0) -> bool:
-    return locate("obyn.png", min_search_time, region=padding(IMAGE_BOXES.OBYN))
-
-
-def locate_play_button(min_search_time: float = 0) -> bool:
-    return locate("play_button.png", min_search_time, region=padding(IMAGE_BOXES.PLAY))
-
-
-def locate_victory(min_search_time: float = 0) -> bool:
-    return locate("victory.png", min_search_time, region=padding(IMAGE_BOXES.VICTORY))
+locate_menu = partial(locate, "menu.png", region=IMAGE_BOXES.MENU)
+locate_obyn = partial(locate, "obyn.png", region=padding(IMAGE_BOXES.OBYN))
+locate_play_button = partial(locate, "play_button.png", region=padding(IMAGE_BOXES.PLAY))
+locate_victory = partial(locate, "victory.png", region=padding(IMAGE_BOXES.VICTORY))
 
 
 def check_obyn() -> None:
