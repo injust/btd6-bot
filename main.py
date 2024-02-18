@@ -116,8 +116,12 @@ class Sub(Tower):
 
 ###########################################[SETUP]###########################################
 
-screen_size = Size(*pydirectinput.size())
-if screen_size.height != 1440:
+
+def screen_size() -> Size:
+    return Size(*pydirectinput.size())
+
+
+if screen_size().height != 1440:
     raise Exception("Unsupported resolution")
 
 
@@ -147,7 +151,7 @@ def padding(coords: Box) -> Box: ...
 
 def padding(coords: Point | Box) -> Point | Box:
     """Add padding to support 3440×1440."""
-    padding = (screen_size.width - 2560) // 2
+    padding = (screen_size().width - 2560) // 2
 
     if isinstance(coords, Point):
         return coords._replace(x=coords.x + padding)
@@ -185,7 +189,7 @@ def locate_on_screen(
 ) -> Box | None:
     """Similar to `pyscreeze.locateOnScreen()`, but uses `mss` for screenshots and only screenshots the search region."""
     if region is None:
-        region = Box(0, 0, *screen_size)
+        region = Box(0, 0, *screen_size())
 
     with mss() as sct:
         start_time = time.monotonic()
