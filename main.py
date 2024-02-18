@@ -6,6 +6,7 @@ from abc import ABC, abstractmethod
 from collections.abc import Callable, Generator
 from contextlib import contextmanager
 from enum import Enum
+from functools import cache
 from pathlib import Path
 from typing import Any, Literal, NamedTuple, overload
 
@@ -119,9 +120,14 @@ screen_size = Size(*pydirectinput.size())
 if screen_size.height != 1440:
     raise Exception("Unsupported resolution")
 
-IMAGES = {
-    path.stem: cv2.imread(str(path), flags=cv2.IMREAD_GRAYSCALE) for path in (Path.cwd() / "images").glob("*.png")
-}
+
+@cache
+def load_image(file_name: str) -> MatLike:
+    path = Path.cwd() / "images" / file_name
+    if not path.is_file():
+        raise ValueError(f"{path} does not exist")
+
+    return cv2.imread(str(path), flags=cv2.IMREAD_GRAYSCALE)
 
 
 @contextmanager
@@ -199,32 +205,34 @@ def locate_on_screen(
                 return None
 
 
-def locate(name: str, min_search_time: float = 0, *, region: Box | None = None) -> bool:
+def locate(image_name: str, min_search_time: float = 0, *, region: Box | None = None) -> bool:
+    image = load_image(image_name)
+
     with timer_ns() as t:
-        box = locate_on_screen(IMAGES[name], min_search_time, region=region, min_confidence=0.9)
+        box = locate_on_screen(image, min_search_time, region=region, min_confidence=0.9)
 
     if box is None:
-        logger.debug(f"{name} not found after {t() / 1e6} ms")
+        logger.debug(f"{image_name} not found after {t() / 1e6} ms")
         return False
     else:
-        logger.debug(f"{name} located at {box} in {t() / 1e6} ms")
+        logger.debug(f"{image_name} located at {box} in {t() / 1e6} ms")
         return True
 
 
 def locate_menu(min_search_time: float = 0) -> bool:
-    return locate("menu", min_search_time, region=IMAGE_BOXES.MENU)
+    return locate("menu.png", min_search_time, region=IMAGE_BOXES.MENU)
 
 
 def locate_obyn(min_search_time: float = 0) -> bool:
-    return locate("obyn", min_search_time, region=padding(IMAGE_BOXES.OBYN))
+    return locate("obyn.png", min_search_time, region=padding(IMAGE_BOXES.OBYN))
 
 
 def locate_play(min_search_time: float = 0) -> bool:
-    return locate("play", min_search_time, region=padding(IMAGE_BOXES.PLAY))
+    return locate("play.png", min_search_time, region=padding(IMAGE_BOXES.PLAY))
 
 
 def locate_victory(min_search_time: float = 0) -> bool:
-    return locate("victory", min_search_time, region=padding(IMAGE_BOXES.VICTORY))
+    return locate("victory.png", min_search_time, region=padding(IMAGE_BOXES.VICTORY))
 
 
 def obyn_check() -> None:
@@ -243,7 +251,7 @@ def obyn_check() -> None:
 
 
 def easter_event_check() -> None:
-    if not locate("easter"):
+    if not locate("easter.png"):
         return
 
     logger.info("Easter event detected")
@@ -335,7 +343,7 @@ def exit_game() -> None:
     if locate_victory(5):
         click(COORDS.VICTORY_CONTINUE)
         time.sleep(0.5)
-    elif not locate("defeat"):
+    elif not locate("defeat.png"):
         raise Exception("Victory/Defeat not detected")
 
     click(COORDS.VICTORY_HOME)
