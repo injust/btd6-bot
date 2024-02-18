@@ -41,9 +41,15 @@ class Tower(ABC):
 
 
 class Obyn(Tower):
+    def __str__(self) -> str:
+        return f"{type(self).__name__} at {self.coords}"
+
     @property
     def hotkey(self) -> str:
         return "u"
+
+    def upgrade(self, path: Literal[1, 2, 3]) -> None:
+        raise TypeError("Heroes cannot be upgraded")
 
 
 class Ninja(Tower):
