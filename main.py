@@ -231,8 +231,8 @@ def locate_obyn(min_search_time: float = 0) -> bool:
     return locate("obyn.png", min_search_time, region=padding(IMAGE_BOXES.OBYN))
 
 
-def locate_play(min_search_time: float = 0) -> bool:
-    return locate("play.png", min_search_time, region=padding(IMAGE_BOXES.PLAY))
+def locate_play_button(min_search_time: float = 0) -> bool:
+    return locate("play_button.png", min_search_time, region=padding(IMAGE_BOXES.PLAY))
 
 
 def locate_victory(min_search_time: float = 0) -> bool:
@@ -299,7 +299,7 @@ def main_game() -> None:
     logger.info("Starting game")
 
     sleep(1.5)
-    if not locate_play(3):
+    if not locate_play_button(3):
         raise Exception("Play button not detected")
 
     time.sleep(0.2)
