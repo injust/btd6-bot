@@ -2,11 +2,9 @@ from __future__ import annotations
 
 import sys
 import time
-from abc import ABC, abstractmethod
 from enum import Enum
 from functools import cache
 from pathlib import Path
-from typing import Literal
 
 import cv2
 import numpy as np
@@ -14,7 +12,8 @@ from cv2.typing import MatLike
 from loguru import logger
 from mss import mss
 
-from game_input import click, move_to, press
+from game_input import click, press
+from towers import Ninja, Obyn, Sub
 from utils import Box, Point, padding, screen_size, sleep, timer_ns
 
 
@@ -46,55 +45,6 @@ class IMAGE_BOXES(Box, Enum):
     OBYN = Box(717, 1219, 188, 130)
     PLAY = Box(2206, 1281, 145, 148)
     VICTORY = Box(943, 187, 668, 116)
-
-
-class Tower(ABC):
-    coords: Point
-    upgrades: list[int]
-
-    def __init__(self, coords: Point) -> None:
-        self.coords = coords
-        self.upgrades = [0] * 3
-
-        logger.info(f"Placing down {type(self).__name__}")
-        move_to(self.coords, pause=False)
-        press(self.hotkey, pause=False)
-        click(pause=False)
-
-    def __str__(self) -> str:
-        return f"{''.join(map(str, self.upgrades))} {type(self).__name__} at {self.coords}"
-
-    @property
-    @abstractmethod
-    def hotkey(self) -> str:
-        return NotImplemented
-
-    def upgrade(self, path: Literal[1, 2, 3]) -> None:
-        name_before_upgrade = str(self)
-        self.upgrades[path - 1] += 1
-        logger.info(f"Upgrading {name_before_upgrade} to {''.join(map(str, self.upgrades))}")
-
-        click(self.coords)
-        press(["", ",", ".", "/"][path])
-        press("esc")
-
-
-class Obyn(Tower):
-    @property
-    def hotkey(self) -> str:
-        return "u"
-
-
-class Ninja(Tower):
-    @property
-    def hotkey(self) -> str:
-        return "d"
-
-
-class Sub(Tower):
-    @property
-    def hotkey(self) -> str:
-        return "x"
 
 
 ###########################################[SETUP]###########################################
