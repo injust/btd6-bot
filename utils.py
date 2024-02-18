@@ -1,11 +1,11 @@
 from __future__ import annotations
 
 import time
+from collections.abc import Callable, Generator
 from contextlib import contextmanager
-from typing import Any, Callable, Generator, NamedTuple, Self, overload
+from typing import Any, NamedTuple, overload
 
 import pydirectinput
-from cv2.typing import MatLike
 from loguru import logger
 
 
@@ -15,30 +15,15 @@ class Box(NamedTuple):
     width: int
     height: int
 
-    @property
-    def size(self) -> Size:
-        return Size(self.width, self.height)
-
-    @property
-    def top_left(self) -> Point:
-        return Point(self.left, self.top)
-
 
 class Point(NamedTuple):
     x: int
     y: int
 
-    def offset(self, x: int, y: int) -> Self:
-        return self._replace(x=self.x + x, y=self.y + y)
-
 
 class Size(NamedTuple):
     width: int
     height: int
-
-    @classmethod
-    def of(cls, image: MatLike) -> Self:
-        return cls(*image.shape[1::-1])
 
 
 @overload
@@ -50,7 +35,7 @@ def padding(coords: Box) -> Box: ...
 
 
 def padding(coords: Point | Box) -> Point | Box:
-    """Add padding to account for non-16:9 resolutions."""
+    """Add padding to support 3440×1440."""
     padding = (screen_size().width - 2560) // 2
 
     if isinstance(coords, Point):

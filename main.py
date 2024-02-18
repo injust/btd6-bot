@@ -3,12 +3,10 @@ from __future__ import annotations
 import sys
 import time
 from abc import ABC, abstractmethod
-from collections.abc import Callable, Generator
-from contextlib import contextmanager
 from enum import Enum
 from functools import cache
 from pathlib import Path
-from typing import Any, Literal, NamedTuple, overload
+from typing import Literal, overload
 
 import cv2
 import numpy as np
@@ -17,22 +15,7 @@ from cv2.typing import MatLike
 from loguru import logger
 from mss import mss
 
-
-class Box(NamedTuple):
-    left: int
-    top: int
-    width: int
-    height: int
-
-
-class Point(NamedTuple):
-    x: int
-    y: int
-
-
-class Size(NamedTuple):
-    width: int
-    height: int
+from utils import Box, Point, padding, screen_size, sleep, timer_ns
 
 
 # positions mapped at 2560x1440
@@ -116,11 +99,6 @@ class Sub(Tower):
 
 ###########################################[SETUP]###########################################
 
-
-def screen_size() -> Size:
-    return Size(*pydirectinput.size())
-
-
 if screen_size().height != 1440:
     raise Exception("Unsupported resolution")
 
@@ -132,30 +110,6 @@ def load_image(file_name: str) -> MatLike:
         raise ValueError(f"{path} does not exist")
 
     return cv2.imread(str(path), flags=cv2.IMREAD_GRAYSCALE)
-
-
-@contextmanager
-def timer_ns() -> Generator[Callable[[], int], Any, None]:
-    t1 = t2 = time.time_ns()
-    yield lambda: t2 - t1
-    t2 = time.time_ns()
-
-
-@overload
-def padding(coords: Point) -> Point: ...
-
-
-@overload
-def padding(coords: Box) -> Box: ...
-
-
-def padding(coords: Point | Box) -> Point | Box:
-    """Add padding to support 3440×1440."""
-    padding = (screen_size().width - 2560) // 2
-
-    if isinstance(coords, Point):
-        return coords._replace(x=coords.x + padding)
-    return coords._replace(left=coords.left + padding)
 
 
 @overload
@@ -188,11 +142,6 @@ def press(key: str, *, presses: int = 1, sleep: bool = True) -> None:
 
     if sleep:
         time.sleep(0.1)
-
-
-def sleep(seconds: float) -> None:
-    logger.debug(f"Sleeping for {seconds} seconds")
-    time.sleep(seconds)
 
 
 def locate_opencv(needle: MatLike, haystack: MatLike) -> tuple[Box, float]:
