@@ -77,13 +77,9 @@ def check_easter_event() -> None:
     click(COORDS.EASTER_COLLECTION)
     time.sleep(1)
 
-    click(COORDS.EASTER_INSTA_L)
+    click(COORDS.EASTER_INSTA_L, clicks=2, interval=1)
     time.sleep(1)
-    click(COORDS.EASTER_INSTA_L)
-    time.sleep(1)
-    click(COORDS.EASTER_INSTA_R)
-    time.sleep(1)
-    click(COORDS.EASTER_INSTA_R)
+    click(COORDS.EASTER_INSTA_R, clicks=2, interval=1)
     time.sleep(1.5)
 
     click(COORDS.EASTER_CONTINUE)
@@ -101,8 +97,7 @@ def select_map() -> None:
 
     click(COORDS.HOME_START)
     time.sleep(0.1)
-    click(COORDS.EXPERT_SELECTION)
-    click(COORDS.EXPERT_SELECTION)
+    click(COORDS.EXPERT_SELECTION, clicks=2)
     click(COORDS.DARK_CASTLE)
     click(COORDS.EASY_DIFFICULTY)
     click(COORDS.STANDARD_MODE)
