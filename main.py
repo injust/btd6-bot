@@ -37,6 +37,7 @@ class COORDS(Point, Enum):
 
 # position of each screenshot at 2560x1440
 class IMAGE_BOXES(Box, Enum):
+    EASTER = Box(1116, 849, 322, 114)
     MENU = Box(45, 594, 119, 101)
     OBYN = Box(717, 1219, 188, 130)
     PLAY = Box(2206, 1281, 145, 148)
@@ -48,6 +49,7 @@ class IMAGE_BOXES(Box, Enum):
 if screen_size().height != 1440:
     raise Exception("Unsupported resolution")
 
+locate_easter = partial(locate, "easter.png", region=padding(IMAGE_BOXES.EASTER))
 locate_menu = partial(locate, "menu.png", region=IMAGE_BOXES.MENU)
 locate_obyn = partial(locate, "obyn.png", region=padding(IMAGE_BOXES.OBYN))
 locate_play_button = partial(locate, "play_button.png", region=padding(IMAGE_BOXES.PLAY))
@@ -70,7 +72,7 @@ def check_obyn() -> None:
 
 
 def check_easter_event() -> None:
-    if not locate("easter.png"):
+    if not locate_easter():
         return
 
     logger.info("Easter event detected")
