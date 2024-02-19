@@ -113,7 +113,7 @@ def select_map() -> None:
 def play_game() -> None:
     logger.info("Starting game")
 
-    sleep(1.5)
+    sleep(2)
     if not locate_play_button(3):
         raise Exception("Play button not detected")
 
