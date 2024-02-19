@@ -5,6 +5,7 @@ from collections.abc import Callable, Generator
 from contextlib import contextmanager
 from typing import Any, NamedTuple, Self, overload
 
+import cv2
 import pydirectinput
 from cv2.typing import MatLike
 from loguru import logger
@@ -40,6 +41,10 @@ class Size(NamedTuple):
     @classmethod
     def of(cls, image: MatLike) -> Self:
         return cls(*image.shape[1::-1])
+
+
+def imwrite(file_name: str, image: MatLike, *, png_compression: int = 0) -> bool:
+    return cv2.imwrite(file_name, image, [cv2.IMWRITE_PNG_COMPRESSION, png_compression])
 
 
 @overload
