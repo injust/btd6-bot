@@ -1,13 +1,17 @@
 from __future__ import annotations
 
+import string
 import sys
 import time
 from enum import Enum
 from functools import partial
+from pathlib import Path
 
 from loguru import logger
+from tesserocr import PSM
 
 from game_input import click, press
+from ocr import OCR
 from recognition import locate
 from towers import Hero, Ninja, Sub
 from utils import Box, Point, padding, screen_size, sleep
@@ -42,6 +46,12 @@ class IMAGE_BOXES(Box, Enum):
     OBYN = 717, 1219, 188, 130
     PLAY = 2206, 1281, 145, 148
     VICTORY = 943, 187, 668, 116
+
+
+# position on the UI at 2560x1440
+class OCR_BOXES(Box, Enum):
+    MONEY = 462, 29, 280, 58
+    ROUND = 1853, 43, 225, 54
 
 
 locate_collect = partial(locate, "collect.png", region=padding(IMAGE_BOXES.COLLECT))
@@ -167,19 +177,13 @@ def main() -> None:
         logger.error("Unsupported resolution")
         return
 
-    logger.info("Focus the BTD6 window within 5 seconds")
-    if not locate_menu(5):
-        logger.error("BTD6 menu not detected")
-        return
-    time.sleep(0.5)
-
-    check_obyn()
-
     try:
-        while True:
-            select_map()
-            play_game()
-            exit_game()
+        with OCR(tessdata=Path.cwd() / "tessdata", psm=PSM.SINGLE_WORD) as ocr:
+            while True:
+                ocr.ocr(OCR_BOXES.MONEY, alphabet=string.digits + "$")
+                time.sleep(2)
+                ocr.ocr(OCR_BOXES.ROUND, alphabet=string.digits + "/")
+                time.sleep(2)
     except KeyboardInterrupt:
         logger.debug("Shutting down")
 
