@@ -2,7 +2,7 @@
 
 A Python script that plays the Dark Castle map on Bloons TD 6. Farms Insta-Monkeys, Monkey Money, and XP!
 
-Forked from [RavingSmurfGB/Py_AutoBloons](https://github.com/RavingSmurfGB/Py_AutoBloons).
+Forked from [RavingSmurfGB/Py_AutoBloons](https://github.com/RavingSmurfGB/Py_AutoBloons) and inspired by [linus-jansson/btd6farmer](https://github.com/linus-jansson/btd6farmer).
 
 ## How it works
 
