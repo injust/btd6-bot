@@ -16,6 +16,14 @@ class Box(NamedTuple):
     width: int
     height: int
 
+    @property
+    def size(self) -> Size:
+        return Size(self.width, self.height)
+
+    @property
+    def top_left(self) -> Point:
+        return Point(self.left, self.top)
+
 
 class Point(NamedTuple):
     x: int
