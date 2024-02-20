@@ -3,9 +3,10 @@ from __future__ import annotations
 import time
 from collections.abc import Callable, Generator
 from contextlib import contextmanager
-from typing import Any, NamedTuple, overload
+from typing import Any, NamedTuple, Self, overload
 
 import pydirectinput
+from cv2.typing import MatLike
 from loguru import logger
 
 
@@ -24,6 +25,10 @@ class Point(NamedTuple):
 class Size(NamedTuple):
     width: int
     height: int
+
+    @classmethod
+    def of(cls, image: MatLike) -> Self:
+        return cls(*image.shape[1::-1])
 
 
 @overload
