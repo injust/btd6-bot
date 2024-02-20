@@ -10,7 +10,7 @@ from cv2.typing import MatLike
 from loguru import logger
 from mss import mss
 
-from utils import Box, screen_size, timer_ns
+from utils import Box, Size, screen_size, timer_ns
 
 
 @cache
@@ -26,11 +26,13 @@ def match_template(needle: MatLike, haystack: MatLike) -> tuple[Box, float]:
     """Simplified version of `pyscreeze._locateAll_opencv()."""
     # Avoid semi-cryptic OpenCV error if bad size
     if haystack.shape[0] < needle.shape[0] or haystack.shape[1] < needle.shape[1]:
-        raise ValueError("Needle image dimensions exceed haystack image dimensions")
+        haystack_size = Size(*haystack.shape[1::-1])
+        needle_size = Size(*needle.shape[1::-1])
+        raise ValueError(f"{needle_size} needle image exceeds {haystack_size} haystack image")
 
     results = cv2.matchTemplate(haystack, needle, cv2.TM_CCOEFF_NORMED)
     _, confidence, _, coords = cv2.minMaxLoc(results)
-    return Box(*coords, *needle.shape), confidence
+    return Box(*coords, *needle.shape[1::-1]), confidence
 
 
 def locate(
