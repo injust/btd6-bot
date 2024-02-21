@@ -16,4 +16,12 @@ repos:
       - id: mypy
         args: [--disable-error-code=import-untyped]
         additional_dependencies:
-          [attrs, loguru, mss, numpy, opencv-python-headless, pydirectinput_rgx]
+          [
+            attrs,
+            loguru,
+            mss,
+            numpy,
+            opencv-python-headless,
+            pydirectinput_rgx,
+            tesserocr @ https://github.com/simonflueckiger/tesserocr-windows_build/releases/download/tesserocr-v2.7.1-tesseract-5.4.1/tesserocr-2.7.1-cp312-cp312-win_amd64.whl,
+          ]

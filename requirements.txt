@@ -4,3 +4,4 @@ mss~=10.0
 numpy~=2.1
 opencv-python-headless~=4.10
 pydirectinput_rgx~=2.1
+tesserocr @ https://github.com/simonflueckiger/tesserocr-windows_build/releases/download/tesserocr-v2.7.1-tesseract-5.4.1/tesserocr-2.7.1-cp312-cp312-win_amd64.whl
