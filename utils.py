@@ -29,6 +29,9 @@ class Point(NamedTuple):
     x: int
     y: int
 
+    def offset(self, x: int, y: int) -> Self:
+        return self._replace(x=self.x + x, y=self.y + y)
+
 
 class Size(NamedTuple):
     width: int
