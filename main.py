@@ -85,7 +85,7 @@ def check_easter_event() -> None:
     time.sleep(0.5)
 
     click(COORDS.EASTER_CONTINUE)
-    time.sleep(0.5)
+    time.sleep(0.2)
     press("esc")
     time.sleep(2)
 
