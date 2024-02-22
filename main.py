@@ -74,13 +74,13 @@ def check_collection_event() -> None:
     click(COORDS.COLLECTION_EVENT_COLLECT)
     time.sleep(1)
 
-    click(COORDS.COLLECTION_EVENT_INSTA_L, clicks=2, interval=1)
-    time.sleep(0.5)
-    click(COORDS.COLLECTION_EVENT_INSTA_R, clicks=2, interval=1)
-    time.sleep(0.5)
+    click(COORDS.COLLECTION_EVENT_INSTA_L, clicks=2, interval=0.5)  # TODO: Verify
+    time.sleep(0.2)  # TODO: Verify
+    click(COORDS.COLLECTION_EVENT_INSTA_R, clicks=2, interval=0.5)  # TODO: Verify
+    time.sleep(0.2)  # TODO: Verify
 
     click(COORDS.COLLECTION_EVENT_CONTINUE)
-    time.sleep(0.2)
+    time.sleep(0.1)  # TODO: Verify
     press("esc")
     time.sleep(2)
 
