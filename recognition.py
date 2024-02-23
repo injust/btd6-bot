@@ -16,10 +16,15 @@ from utils import Box, Point, Size, screen_size, timer_ns
 @cache
 def load_image(file_name: str, *, grayscale: bool) -> MatLike:
     path = Path.cwd() / "images" / file_name
-    if not path.is_file():
-        raise ValueError(f"{path} does not exist")
+    if path.is_dir():
+        raise IsADirectoryError(f"Is a directory: {path}")
+    elif not path.is_file():
+        raise FileNotFoundError(f"No such file: {path}")
 
-    return cv2.imread(str(path), flags=cv2.IMREAD_GRAYSCALE if grayscale else cv2.IMREAD_COLOR)
+    image = cv2.imread(str(path), flags=cv2.IMREAD_GRAYSCALE if grayscale else cv2.IMREAD_COLOR)
+    if image is None:
+        raise ValueError(f"Could not load image: {path}")
+    return image
 
 
 def match_template(needle: MatLike, haystack: MatLike) -> tuple[Box, float]:
