@@ -46,9 +46,6 @@ class IMAGE_BOXES(Box, Enum):
 
 ###########################################[SETUP]###########################################
 
-if screen_size().height != 1440:
-    raise Exception("Unsupported resolution")
-
 locate_collect = partial(locate, "collect.png", region=padding(IMAGE_BOXES.COLLECT))
 locate_menu = partial(locate, "menu.png", region=IMAGE_BOXES.MENU)
 locate_obyn = partial(locate, "obyn.png", region=padding(IMAGE_BOXES.OBYN))
@@ -172,9 +169,14 @@ def exit_game() -> None:
 
 @logger.catch(onerror=lambda _: sys.exit(1))
 def main() -> None:
+    if screen_size().height != 1440:
+        logger.error("Unsupported resolution")
+        return
+
     logger.info("Focus the BTD6 window within 5 seconds")
     if not locate_menu(5):
-        raise Exception("BTD6 menu not detected")
+        logger.error("BTD6 menu not detected")
+        return
     time.sleep(0.5)
 
     check_obyn()
