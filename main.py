@@ -44,8 +44,6 @@ class IMAGE_BOXES(Box, Enum):
     VICTORY = Box(943, 187, 668, 116)
 
 
-###########################################[SETUP]###########################################
-
 locate_collect = partial(locate, "collect.png", region=padding(IMAGE_BOXES.COLLECT))
 locate_menu = partial(locate, "menu.png", region=IMAGE_BOXES.MENU)
 locate_obyn = partial(locate, "obyn.png", region=padding(IMAGE_BOXES.OBYN))
@@ -87,10 +85,6 @@ def check_collection_event() -> None:
     time.sleep(2)
 
 
-###########################################
-
-
-###########################################[GAME]###########################################
 def select_map() -> None:
     logger.info("Selecting map")
 
