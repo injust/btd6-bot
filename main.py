@@ -26,10 +26,10 @@ class COORDS(Point, Enum):
     TOWER_NINJA = Point(738, 844)
     VICTORY_CONTINUE = Point(1283, 1215)
     VICTORY_HOME = Point(957, 1135)
-    EASTER_COLLECTION = Point(1279, 911)
-    EASTER_INSTA_L = Point(1075, 750)
-    EASTER_INSTA_R = Point(1480, 750)
-    EASTER_CONTINUE = Point(1280, 1330)
+    COLLECTION_EVENT_COLLECT = Point(1279, 911)
+    COLLECTION_EVENT_INSTA_L = Point(1075, 750)
+    COLLECTION_EVENT_INSTA_R = Point(1480, 750)
+    COLLECTION_EVENT_CONTINUE = Point(1280, 1330)
     HERO_SELECT = Point(800, 1265)
     HERO_OBYN = Point(135, 550)
     HERO_CONFIRM = Point(1490, 815)
@@ -37,7 +37,7 @@ class COORDS(Point, Enum):
 
 # position of each screenshot at 2560x1440
 class IMAGE_BOXES(Box, Enum):
-    EASTER = Box(1116, 849, 322, 114)
+    COLLECT = Box(1116, 849, 322, 114)
     MENU = Box(45, 594, 119, 101)
     OBYN = Box(717, 1219, 188, 130)
     PLAY = Box(2206, 1281, 145, 148)
@@ -49,7 +49,7 @@ class IMAGE_BOXES(Box, Enum):
 if screen_size().height != 1440:
     raise Exception("Unsupported resolution")
 
-locate_easter = partial(locate, "easter.png", region=padding(IMAGE_BOXES.EASTER))
+locate_collect = partial(locate, "collect.png", region=padding(IMAGE_BOXES.COLLECT))
 locate_menu = partial(locate, "menu.png", region=IMAGE_BOXES.MENU)
 locate_obyn = partial(locate, "obyn.png", region=padding(IMAGE_BOXES.OBYN))
 locate_play_button = partial(locate, "play_button.png", region=padding(IMAGE_BOXES.PLAY))
@@ -71,20 +71,20 @@ def check_obyn() -> None:
     assert locate_obyn(0.5)
 
 
-def check_easter_event() -> None:
-    if not locate_easter():
+def check_collection_event() -> None:
+    if not locate_collect():
         return
 
-    logger.info("Easter event detected")
-    click(COORDS.EASTER_COLLECTION)
+    logger.info("Collection event detected")
+    click(COORDS.COLLECTION_EVENT_COLLECT)
     time.sleep(1)
 
-    click(COORDS.EASTER_INSTA_L, clicks=2, interval=1)
+    click(COORDS.COLLECTION_EVENT_INSTA_L, clicks=2, interval=1)
     time.sleep(0.5)
-    click(COORDS.EASTER_INSTA_R, clicks=2, interval=1)
+    click(COORDS.COLLECTION_EVENT_INSTA_R, clicks=2, interval=1)
     time.sleep(0.5)
 
-    click(COORDS.EASTER_CONTINUE)
+    click(COORDS.COLLECTION_EVENT_CONTINUE)
     time.sleep(0.2)
     press("esc")
     time.sleep(2)
@@ -164,7 +164,7 @@ def exit_game() -> None:
 
     click(COORDS.VICTORY_HOME)
     time.sleep(2)
-    check_easter_event()
+    check_collection_event()
 
     if not locate_menu():
         raise Exception("BTD6 menu not detected")
