@@ -40,7 +40,7 @@ class Tower(ABC):
         press("esc")
 
 
-class Obyn(Tower):
+class Hero(Tower):
     def __str__(self) -> str:
         return f"{type(self).__name__} at {self.coords}"
 

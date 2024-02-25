@@ -9,7 +9,7 @@ from loguru import logger
 
 from game_input import click, press
 from recognition import locate
-from towers import Ninja, Obyn, Sub
+from towers import Hero, Ninja, Sub
 from utils import Box, Point, padding, screen_size, sleep
 
 
@@ -109,7 +109,7 @@ def play_game() -> None:
     # Start and fast-forward the game
     press("space", presses=2)
 
-    Obyn(COORDS.TOWER_HERO)
+    Hero(COORDS.TOWER_HERO)
 
     sub = Sub(COORDS.TOWER_SUB)
     time.sleep(0.1)
