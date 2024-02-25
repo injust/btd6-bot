@@ -15,24 +15,24 @@ from utils import Box, Point, padding, screen_size, sleep
 
 # positions mapped at 2560x1440
 class COORDS(Point, Enum):
-    HOME_START = Point(1123, 1248)
-    EXPERT_SELECTION = Point(1778, 1304)
-    DARK_CASTLE = Point(730, 780)
-    EASY_DIFFICULTY = Point(838, 550)
-    STANDARD_MODE = Point(847, 780)
-    OVERWRITE_SAVE = Point(1520, 974)
-    TOWER_OBYN = Point(738, 600)
-    TOWER_SUB = Point(1454, 575)
-    TOWER_NINJA = Point(738, 844)
-    VICTORY_CONTINUE = Point(1283, 1215)
-    VICTORY_HOME = Point(957, 1135)
     COLLECTION_EVENT_COLLECT = Point(1279, 911)
+    COLLECTION_EVENT_CONTINUE = Point(1280, 1330)
     COLLECTION_EVENT_INSTA_L = Point(1075, 750)
     COLLECTION_EVENT_INSTA_R = Point(1480, 750)
-    COLLECTION_EVENT_CONTINUE = Point(1280, 1330)
-    HERO_SELECT = Point(800, 1265)
+    GAME_DIFFICULTY_EASY = Point(838, 550)
+    GAME_MODE_STANDARD = Point(847, 780)
     HERO_OBYN = Point(135, 550)
-    HERO_CONFIRM = Point(1490, 815)
+    HERO_SELECT = Point(1490, 815)
+    HOME_HEROES = Point(800, 1265)
+    HOME_PLAY = Point(1123, 1248)
+    MAP_DARK_CASTLE = Point(730, 780)
+    MAP_DIFFICULTY_EXPERT = Point(1778, 1304)
+    OVERWRITE_SAVE_YES = Point(1520, 974)
+    TOWER_HERO = Point(738, 600)
+    TOWER_NINJA = Point(738, 844)
+    TOWER_SUB = Point(1454, 575)
+    VICTORY_CONTINUE = Point(1283, 1215)
+    VICTORY_HOME = Point(957, 1135)
 
 
 # position of each screenshot at 2560x1440
@@ -57,10 +57,10 @@ def check_obyn() -> None:
         return
 
     logger.info("Obyn not selected, changing hero")
-    click(COORDS.HERO_SELECT)
+    click(COORDS.HOME_HEROES)
     time.sleep(0.2)
     click(COORDS.HERO_OBYN, add_padding=False)
-    click(COORDS.HERO_CONFIRM)
+    click(COORDS.HERO_SELECT)
     press("esc")
 
     assert locate_obyn(0.5)
@@ -88,14 +88,14 @@ def check_collection_event() -> None:
 def select_map() -> None:
     logger.info("Selecting map")
 
-    click(COORDS.HOME_START)
+    click(COORDS.HOME_PLAY)
     time.sleep(0.1)
-    click(COORDS.EXPERT_SELECTION, clicks=2)
-    click(COORDS.DARK_CASTLE)
-    click(COORDS.EASY_DIFFICULTY)
-    click(COORDS.STANDARD_MODE)
+    click(COORDS.MAP_DIFFICULTY_EXPERT, clicks=2)
+    click(COORDS.MAP_DARK_CASTLE)
+    click(COORDS.GAME_DIFFICULTY_EASY)
+    click(COORDS.GAME_MODE_STANDARD)
     time.sleep(0.1)
-    click(COORDS.OVERWRITE_SAVE)
+    click(COORDS.OVERWRITE_SAVE_YES)
 
 
 def play_game() -> None:
@@ -109,7 +109,7 @@ def play_game() -> None:
     # Start and fast-forward the game
     press("space", presses=2)
 
-    Obyn(COORDS.TOWER_OBYN)
+    Obyn(COORDS.TOWER_HERO)
 
     sub = Sub(COORDS.TOWER_SUB)
     time.sleep(0.1)
