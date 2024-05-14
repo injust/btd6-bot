@@ -17,7 +17,7 @@ class Tower(ABC):
         self.coords = coords
         self.upgrades = [0] * 3
 
-        logger.info(f"Placing down {type(self).__name__}")
+        logger.info("Placing down {}", type(self).__name__)
         move_to(self.coords, pause=False)
         press(self.hotkey, pause=False)
         click(pause=False)
@@ -33,7 +33,7 @@ class Tower(ABC):
     def upgrade(self, path: Literal[1, 2, 3]) -> None:
         name_before_upgrade = str(self)
         self.upgrades[path - 1] += 1
-        logger.info(f"Upgrading {name_before_upgrade} to {"".join(map(str, self.upgrades))}")
+        logger.info("Upgrading {} to {}", name_before_upgrade, "".join(map(str, self.upgrades)))
 
         click(self.coords)
         press(["", ",", ".", "/"][path])

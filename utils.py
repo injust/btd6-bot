@@ -64,7 +64,7 @@ def screen_size() -> Size:
 
 
 def sleep(seconds: float) -> None:
-    logger.debug(f"Sleeping for {seconds} seconds")
+    logger.debug("Sleeping for {} seconds", seconds)
     time.sleep(seconds)
 
 
