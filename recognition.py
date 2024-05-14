@@ -61,11 +61,11 @@ def locate(
             while True:
                 with timer_ns() as t:
                     screenshot = cv2.cvtColor(np.asarray(sct.grab(region._asdict())), color_conversion)
-                logger.debug(f"Screenshot took {t() / 1e6} ms")
+                logger.debug("Screenshot took {} ms", t() / 1e6)
 
                 with timer_ns() as t:
                     box, confidence = match_template(image, screenshot)
-                logger.debug(f"Template matching found {box} in {t() / 1e6} ms with confidence={confidence:.3f}")
+                logger.debug("Template matching found {} in {} ms with confidence={:.3f}", box, t() / 1e6, confidence)
 
                 if confidence >= min_confidence:
                     # Adjust box to return coordinates relative to screen instead of search region
@@ -77,8 +77,8 @@ def locate(
         box = locate_on_screen()
 
     if box is None:
-        logger.debug(f"{image_name} not found after {t() / 1e6} ms")
+        logger.debug("{} not found after {} ms", image_name, t() / 1e6)
         return False
     else:
-        logger.debug(f"{image_name} located at {box} in {t() / 1e6} ms")
+        logger.debug("{} located at {} in {} ms", image_name, box, t() / 1e6)
         return True
