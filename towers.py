@@ -23,7 +23,7 @@ class Tower(ABC):
         click(pause=False)
 
     def __str__(self) -> str:
-        return f"{''.join(map(str, self.upgrades))} {type(self).__name__} at {self.coords}"
+        return f"{"".join(map(str, self.upgrades))} {type(self).__name__} at {self.coords}"
 
     @property
     @abstractmethod
@@ -33,7 +33,7 @@ class Tower(ABC):
     def upgrade(self, path: Literal[1, 2, 3]) -> None:
         name_before_upgrade = str(self)
         self.upgrades[path - 1] += 1
-        logger.info(f"Upgrading {name_before_upgrade} to {''.join(map(str, self.upgrades))}")
+        logger.info(f"Upgrading {name_before_upgrade} to {"".join(map(str, self.upgrades))}")
 
         click(self.coords)
         press(["", ",", ".", "/"][path])
