@@ -3,20 +3,19 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import Literal
 
+from attrs import define, field
 from loguru import logger
 
 from game_input import click, move_to, press
 from utils import Point
 
 
+@define
 class Tower(ABC):
     coords: Point
-    upgrades: list[int]
+    upgrades: list[int] = field(init=False, factory=lambda: [0] * 3)
 
-    def __init__(self, coords: Point) -> None:
-        self.coords = coords
-        self.upgrades = [0] * 3
-
+    def __attrs_postinit__(self) -> None:
         logger.info("Placing down {}", type(self).__name__)
         move_to(self.coords, pause=False)
         press(self.hotkey, pause=False)
@@ -40,6 +39,7 @@ class Tower(ABC):
         press("esc")
 
 
+@define
 class Hero(Tower):
     def __str__(self) -> str:
         return f"{type(self).__name__} at {self.coords}"
@@ -52,12 +52,14 @@ class Hero(Tower):
         raise TypeError("Heroes cannot be upgraded")
 
 
+@define
 class Ninja(Tower):
     @property
     def hotkey(self) -> str:
         return "d"
 
 
+@define
 class Sub(Tower):
     @property
     def hotkey(self) -> str:
