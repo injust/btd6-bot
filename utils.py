@@ -54,9 +54,11 @@ def padding(coords: Point | Box) -> Point | Box:
     """Add padding to support 3440×1440."""
     padding = (screen_size().width - 2560) // 2
 
-    if isinstance(coords, Point):
-        return coords._replace(x=coords.x + padding)
-    return coords._replace(left=coords.left + padding)
+    match coords:
+        case Point():
+            return coords._replace(x=coords.x + padding)
+        case Box():
+            return coords._replace(left=coords.left + padding)
 
 
 def screen_size() -> Size:
