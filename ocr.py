@@ -4,7 +4,7 @@ from collections.abc import Sequence
 from contextlib import AbstractContextManager, ExitStack
 from pathlib import Path
 from types import TracebackType
-from typing import Self, cast
+from typing import Self, cast, override
 
 import cv2
 import numpy as np
@@ -28,7 +28,10 @@ class OCR(AbstractContextManager["OCR"]):
     CHARACTER_MIN_WIDTH = 60
     CHARACTER_MIN_HEIGHT = 115
 
+    @override
     def __enter__(self) -> Self:
+        super().__enter__()
+
         with ExitStack() as exit_stack:
             self.tesseract = exit_stack.enter_context(PyTessBaseAPI(path=str(self.tessdata), psm=self.psm))
             self._exit_stack = exit_stack.pop_all()
@@ -37,6 +40,7 @@ class OCR(AbstractContextManager["OCR"]):
     def close(self) -> None:
         self._exit_stack.close()
 
+    @override
     def __exit__(
         self, exc_type: type[BaseException] | None, exc_value: BaseException | None, traceback: TracebackType | None
     ) -> None:
