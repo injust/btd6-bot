@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Literal
+from typing import Literal, override
 
 from attrs import define, field
 from loguru import logger
@@ -21,6 +21,7 @@ class Tower(ABC):
         press(self.hotkey, pause=False)
         click(pause=False)
 
+    @override
     def __str__(self) -> str:
         return f"{"".join(map(str, self.upgrades))} {type(self).__name__} at {self.coords}"
 
@@ -41,13 +42,16 @@ class Tower(ABC):
 
 @define
 class Hero(Tower):
+    @override
     def __str__(self) -> str:
         return f"{type(self).__name__} at {self.coords}"
 
     @property
+    @override
     def hotkey(self) -> str:
         return "u"
 
+    @override
     def upgrade(self, path: Literal[1, 2, 3]) -> None:
         raise TypeError("Heroes cannot be upgraded")
 
@@ -55,6 +59,7 @@ class Hero(Tower):
 @define
 class Ninja(Tower):
     @property
+    @override
     def hotkey(self) -> str:
         return "d"
 
@@ -62,5 +67,6 @@ class Ninja(Tower):
 @define
 class Sub(Tower):
     @property
+    @override
     def hotkey(self) -> str:
         return "x"
