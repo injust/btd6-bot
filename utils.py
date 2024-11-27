@@ -71,7 +71,7 @@ def sleep(seconds: float) -> None:
 
 
 @contextmanager
-def timer_ns() -> Generator[Callable[[], int], Any, None]:
+def timer_ns() -> Generator[Callable[[], int], Any]:
     t1 = t2 = time.time_ns()
     yield lambda: t2 - t1
     t2 = time.time_ns()
