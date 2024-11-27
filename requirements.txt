@@ -1,6 +1,6 @@
-attrs>=24.2.0
-loguru>=0.7.2
-mss>=9.0.2
-numpy>=2.1.1
-opencv-python-headless>=4.10.0.84
-pydirectinput_rgx>=2.1.1
+attrs~=24.2
+loguru~=0.7
+mss~=10.0
+numpy~=2.1
+opencv-python-headless~=4.10
+pydirectinput_rgx~=2.1
